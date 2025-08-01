@@ -3,6 +3,7 @@
 
 import { defineConfig } from '#q-app/wrappers'
 import { fileURLToPath } from 'node:url'
+import { VueMcp } from 'vite-plugin-vue-mcp'
 
 export default defineConfig((ctx) => {
   return {
@@ -85,6 +86,10 @@ export default defineConfig((ctx) => {
           },
           { server: false },
         ],
+
+        [
+          VueMcp
+        ]
       ],
     },
 
@@ -109,7 +114,7 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Notify'],
     },
 
     // animations: 'all', // --- includes all animations

@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"vue": {
+			"url": "http://localhost:9000/__mcp/sse",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}
