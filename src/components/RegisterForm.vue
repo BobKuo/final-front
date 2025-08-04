@@ -1,5 +1,4 @@
 <template>
-  <!-- @submit.prevent="submit" -->
   <q-form class="q-gutter-md" @submit.prevent="submit">
     <h6>註冊</h6>
     <!-- 帳號 -->
@@ -146,9 +145,11 @@ const submit = form.handleSubmit(async (values) => {
     // 顯示成功訊息
     $q.notify({
       type: 'positive',
-      message: '註冊成功！',
+      message: '註冊成功! 請登入',
       position: 'bottom-right',
     })
+    // 切換到登入
+    props.toggleRegister()
   } catch (error) {
     console.error(error)
     // 顯示錯誤訊息
@@ -160,5 +161,5 @@ const submit = form.handleSubmit(async (values) => {
   }
 })
 
-defineProps(['toggleRegister'])
+const props = defineProps(['toggleRegister'])
 </script>

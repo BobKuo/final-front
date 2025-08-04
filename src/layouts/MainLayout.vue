@@ -10,7 +10,15 @@
         </q-toolbar-title>
 
         <q-tabs align="right">
-          <q-route-tab v-for="item in navItems" :key="item.to" :to="item.to" :label="item.label" />
+          <template v-for="item in navItems">
+            <q-route-tab
+              v-if="item.show !== false"
+              :key="item.to"
+              :to="item.to"
+              :label="item.label"
+              exact
+            />
+          </template>
         </q-tabs>
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
@@ -22,7 +30,12 @@
         <!-- 登入表單 -->
         <q-item>
           <q-item-section>
-            <LoginForm v-if="!isLoggedIn && !showRegister" :toggleRegister="toggleRegister" />
+            <UserProfile v-if="isLoggedIn" @closeDrawer="toggleRightDrawer" />
+            <LoginForm
+              v-if="!isLoggedIn && !showRegister"
+              :toggleRegister="toggleRegister"
+              @closeDrawer="toggleRightDrawer"
+            />
             <RegisterForm v-if="showRegister" :toggleRegister="toggleRegister" />
             <!-- <MemberActions v-if="isLoggedIn" @logout="logout" /> -->
           </q-item-section>
@@ -48,25 +61,34 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import LoginForm from '../components/LoginForm.vue'
-import RegisterForm from '../components/RegisterForm.vue'
+import { computed, ref } from 'vue'
+import LoginForm from 'src/components/LoginForm.vue'
+import RegisterForm from 'src/components/RegisterForm.vue'
+import UserProfile from 'src/components/UserProfile.vue'
+import { useUserStore } from 'src/stores/user'
 // import MemberActions from '../components/MemberActions.vue'
 
+const userStore = useUserStore()
+
 const rightDrawerOpen = ref(false)
-const isLoggedIn = ref(false) // 是否已登入
+// const isLoggedIn = ref(false) // 是否已登入
+const isLoggedIn = computed(() => userStore.isLoggedIn) // 從 userStore 取得登入狀態
+const isAdmin = computed(() => userStore.isAdmin) // 是否為管理員
 const showRegister = ref(false) // 是否顯示註冊表單
 
+isLoggedIn.value = userStore.isLoggedIn // 從 userStore 取得登入狀態
+
 //
-const navItems = [
-  { to: '/daily', label: '365日常' },
+const navItems = computed(() => [
+  { to: '/daily', label: '365日常', show: true },
   { to: '/work', label: '作品集' },
-  { to: '/paper', label: '著色紙下載' },
-  { to: '/shop', label: '原畫及周邊' },
+  { to: '/paper', label: '著色紙下載', show: isLoggedIn.value },
+  { to: '/shop', label: '原畫及周邊', show: isLoggedIn.value },
   { to: '/shop', label: '小短片' },
   { to: '/shop', label: '關於我' },
   { to: '/shop', label: '聯絡我' },
-]
+  { to: '/shop', label: '管理後台', show: isLoggedIn.value && isAdmin.value },
+])
 
 // 切換右側側欄
 const toggleRightDrawer = () => {
@@ -78,10 +100,4 @@ const toggleRightDrawer = () => {
 const toggleRegister = () => {
   showRegister.value = !showRegister.value
 }
-
-// 登出功能
-// const logout = () => {
-//   isLoggedIn.value = false
-//   alert('已登出！')
-// }
 </script>
