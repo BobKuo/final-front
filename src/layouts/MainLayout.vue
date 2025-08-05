@@ -30,14 +30,13 @@
         <!-- 登入表單 -->
         <q-item>
           <q-item-section>
-            <UserProfile v-if="isLoggedIn" @closeDrawer="toggleRightDrawer" />
+            <UserProfile v-if="userStore.isLoggedIn" @closeDrawer="toggleRightDrawer" />
             <LoginForm
-              v-if="!isLoggedIn && !showRegister"
+              v-if="!userStore.isLoggedIn && !showRegister"
               :toggleRegister="toggleRegister"
               @closeDrawer="toggleRightDrawer"
             />
             <RegisterForm v-if="showRegister" :toggleRegister="toggleRegister" />
-            <!-- <MemberActions v-if="isLoggedIn" @logout="logout" /> -->
           </q-item-section>
         </q-item>
       </q-list>
@@ -71,23 +70,18 @@ import { useUserStore } from 'src/stores/user'
 const userStore = useUserStore()
 
 const rightDrawerOpen = ref(false)
-// const isLoggedIn = ref(false) // 是否已登入
-const isLoggedIn = computed(() => userStore.isLoggedIn) // 從 userStore 取得登入狀態
-const isAdmin = computed(() => userStore.isAdmin) // 是否為管理員
 const showRegister = ref(false) // 是否顯示註冊表單
-
-isLoggedIn.value = userStore.isLoggedIn // 從 userStore 取得登入狀態
 
 //
 const navItems = computed(() => [
   { to: '/daily', label: '365日常', show: true },
-  { to: '/work', label: '作品集' },
-  { to: '/paper', label: '著色紙下載', show: isLoggedIn.value },
-  { to: '/shop', label: '原畫及周邊', show: isLoggedIn.value },
-  { to: '/shop', label: '小短片' },
-  { to: '/shop', label: '關於我' },
-  { to: '/shop', label: '聯絡我' },
-  { to: '/shop', label: '管理後台', show: isLoggedIn.value && isAdmin.value },
+  { to: '/work', label: '作品集', show: true },
+  { to: '/paper', label: '著色紙下載', show: userStore.isLoggedIn },
+  { to: '/shopping', label: '原畫及周邊', show: userStore.isLoggedIn },
+  { to: '/clips', label: '小短片' },
+  { to: '/about', label: '關於我' },
+  { to: '/contact', label: '聯絡我' },
+  { to: '/admin', label: '管理後台', show: userStore.isLoggedIn && userStore.isAdmin },
 ])
 
 // 切換右側側欄
