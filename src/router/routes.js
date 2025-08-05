@@ -25,8 +25,8 @@ const routes = [
     component: () => import('layouts/AdminLayout.vue'),
     meta: { title: '管理員', login: 'login-only', admin: true },
     children: [
-      // { path: 'products', component: () => import('pages/admin/ProductsPage.vue') },
-      // { path: 'orders', component: () => import('pages/admin/OrdersPage.vue') },
+      { path: 'products', component: () => import('pages/admin/ProductsPage.vue') },
+      { path: 'orders', component: () => import('pages/admin/OrdersPage.vue') },
     ],
   },
 

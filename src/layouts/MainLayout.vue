@@ -1,6 +1,13 @@
 <template>
-  <q-layout view="hhr lpr ffr">
-    <q-header bordered class="bg-primary text-white" height-hint="98">
+  <q-layout view="hHr lpr ffr">
+    <q-header
+      v-model="headerVisible"
+      reveal
+      @reveal="onHeaderReveal"
+      bordered
+      class="bg-primary text-white"
+      height-hint="98"
+    >
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
@@ -44,6 +51,9 @@
 
     <q-page-container>
       <router-view />
+      <q-page-sticky position="top">
+        <q-btn @click="toggleHeader" flat round color="primary" icon="arrow_drop_down" />
+      </q-page-sticky>
     </q-page-container>
 
     <q-footer elevated class="bg-grey-8 text-white">
@@ -71,6 +81,7 @@ const userStore = useUserStore()
 
 const rightDrawerOpen = ref(false)
 const showRegister = ref(false) // 是否顯示註冊表單
+const headerVisible = ref(true)
 
 //
 const navItems = computed(() => [
@@ -81,7 +92,7 @@ const navItems = computed(() => [
   { to: '/clips', label: '小短片' },
   { to: '/about', label: '關於我' },
   { to: '/contact', label: '聯絡我' },
-  { to: '/admin', label: '管理後台', show: userStore.isLoggedIn && userStore.isAdmin },
+  { to: '/admin/products', label: '管理後台', show: userStore.isLoggedIn && userStore.isAdmin },
 ])
 
 // 切換右側側欄
@@ -89,9 +100,19 @@ const toggleRightDrawer = () => {
   rightDrawerOpen.value = !rightDrawerOpen.value
 }
 
-//
 // 切換註冊表單顯示
 const toggleRegister = () => {
   showRegister.value = !showRegister.value
+}
+
+// 顯示頁首
+const toggleHeader = () => {
+  headerVisible.value = !headerVisible.value
+}
+
+//
+const onHeaderReveal = (value) => {
+  console.log(value ? '🔼 Header 出現（reveal）' : '🔽 Header 被收起（hide）')
+  headerVisible.value = value
 }
 </script>

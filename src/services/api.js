@@ -1,5 +1,5 @@
 import axios from 'axios'
-// import userService from 'src/services/user'
+import userService from 'src/services/user'
 import { useUserStore } from 'src/stores/user'
 
 // axios.create 建立一個有自己預設設定的 axios
@@ -31,6 +31,35 @@ apiAuth.interceptors.request.use((config) => {
   const userStore = useUserStore()
   config.headers.Authorization = `Bearer ${userStore.token}`
   return config
+})
+
+// .use(成功處理, 失敗處理)
+apiAuth.interceptors.response.use(res => res, async error => {
+  // 如果錯誤有回應，沒網路的話不會有回應
+  // 而且是 400 錯誤，而且是過期錯誤，而且請求不是更新
+  if (error.response
+    && error.response.status === 400
+    && error.response.data.message === 'token 已過期'
+    && error.config.url !== '/user/refresh'
+  ) {
+    const userStore = useUserStore()
+    try {
+      // 傳送更新請求
+      const { data } = await userService.refresh()
+      // 更新pinia 存的使用者資料
+      userStore.token = data.token
+      // 修改發生錯誤的請求設定，換成新的 token
+      error.config.headers.Authorization = `Bearer ${data.token}`
+      // 重新發送原本的請求
+      return axios(error.config)
+    } catch {
+      // 如果更新失敗，清除 pinia 存的使用者 token 和資料
+      userStore.clearUser()
+    }
+  }
+  // 如果沒有回應，或是其他錯誤
+  // 回傳原本的錯誤
+  throw error
 })
 
 export default { api, apiAuth }
