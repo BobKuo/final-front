@@ -69,7 +69,7 @@
         </template>
       </q-table>
     </div>
-    <product-dialog />
+    <product-dialog v-model="isShowDialog" :product="dialogProduct" @close="closeDialog" />
   </q-page>
 </template>
 <script setup>
@@ -168,16 +168,17 @@ const showAllImages = (images) => {
   })
 }
 
-// 編輯商品
-const openDialog = (row) => {
-  $q.dialog({
-    title: '編輯商品',
-    message: '這裡可以放置編輯商品的表單',
-    // 這裡可以使用表單組件來編輯商品
-    cancel: true,
-    persistent: true,
-  }).onOk(() => {
-    console.log('商品已更新:', row)
-  })
+// 打開商品對話框
+const isShowDialog = ref(false)
+const dialogProduct = ref(null)
+
+const openDialog = (product) => {
+  dialogProduct.value = product // 編輯時傳入商品，新增時傳 null
+  isShowDialog.value = true
+}
+
+const closeDialog = () => {
+  isShowDialog.value = false
+  dialogProduct.value = null // 重置商品資料
 }
 </script>

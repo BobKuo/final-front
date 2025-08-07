@@ -11,11 +11,11 @@ import { useUserStore } from 'src/stores/user'
 // axios.post('http://localhost:4000/user/login')
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
 })
 
 const apiAuth = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
 })
 
 // axios 攔截器
