@@ -64,13 +64,6 @@
     <!-- 取消 -->
     <q-btn label="取消" flat @click="toggleRegister" />
   </q-form>
-
-  <!--
-  <q-input v-model="registerForm.username" label="使用者名稱" outlined />
-  <q-input v-model="registerForm.email" label="電子郵件" outlined />
-  <q-input v-model="registerForm.password" label="密碼" type="password" outlined />
-    <q-btn label="提交註冊" color="primary" @click="register" />
-    <q-btn label="取消" flat @click="toggleRegister" /> -->
 </template>
 
 <script setup>

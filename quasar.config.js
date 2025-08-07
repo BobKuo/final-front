@@ -87,9 +87,7 @@ export default defineConfig((ctx) => {
           { server: false },
         ],
 
-        [
-          VueMcp
-        ]
+        [VueMcp],
       ],
     },
 
@@ -105,6 +103,7 @@ export default defineConfig((ctx) => {
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
+      lang: 'zh-TW', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
@@ -114,7 +113,7 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify'],
+      plugins: ['Notify', 'Dialog'],
     },
 
     // animations: 'all', // --- includes all animations

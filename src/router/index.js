@@ -11,8 +11,6 @@ import userService from 'src/services/user'
 import { useUserStore } from 'src/stores/user'
 import { useQuasar } from 'quasar'
 
-const $q = useQuasar()
-
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -41,6 +39,7 @@ export default defineRouter(function (/* { store, ssrContext } */) {
 
   Router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore()
+    const $q = useQuasar()
 
     // 第一次進入網站初始導航時，如果有 token，取使用者資料
     if (from === START_LOCATION && userStore.isLoggedIn) {
