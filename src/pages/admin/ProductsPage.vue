@@ -173,11 +173,21 @@ const isShowDialog = ref(false)
 const dialogProduct = ref(null)
 
 const openDialog = (product) => {
+  console.log('打開對話框', product)
+
   dialogProduct.value = product // 編輯時傳入商品，新增時傳 null
   isShowDialog.value = true
 }
 
 const closeDialog = () => {
+  console.log('關閉對話框', dialogProduct.value)
+
+  // 若是新增產品，將後端回傳的結果加進 products
+  if (dialogProduct.value) {
+    console.log('關閉對話框，重新載入商品列表')
+    getProducts() // 重新載入商品列表
+  }
+
   isShowDialog.value = false
   dialogProduct.value = null // 重置商品資料
 }
