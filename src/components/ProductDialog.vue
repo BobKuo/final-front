@@ -206,12 +206,14 @@ const submit = handleSubmit(async (values) => {
       ? productService.update(props.product._id, fd)
       : productService.create(fd))
 
+    console.log('data---', data)
+
     $q.notify({
       type: 'positive',
       message: props.product ? '商品更新成功' : '商品新增成功',
     })
 
-    closeDialog(true)
+    closeDialog(data.product)
   } catch (error) {
     console.error(error)
     $q.notify({
@@ -221,7 +223,7 @@ const submit = handleSubmit(async (values) => {
   }
 })
 
-const closeDialog = (isRefresh) => {
+const closeDialog = (returnedProduct) => {
   // 重置表單
   resetForm()
 
@@ -233,7 +235,7 @@ const closeDialog = (isRefresh) => {
   rawFileRecords.value = []
 
   // 關閉對話框
-  emit('close', isRefresh)
+  emit('close', returnedProduct)
 }
 
 // 刪除圖片

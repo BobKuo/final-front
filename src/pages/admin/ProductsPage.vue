@@ -176,9 +176,16 @@ const openDialog = (product) => {
   isShowDialog.value = true
 }
 
-const handleDialogClose = (isRefresh) => {
-  if (isRefresh) {
-    getProducts() // 重新載入商品列表
+const handleDialogClose = (returnedProduct) => {
+  if (returnedProduct) {
+    const index = products.value.findIndex((p) => p._id === returnedProduct._id)
+    if (index !== -1) {
+      // 更新
+      products.value[index] = returnedProduct
+    } else {
+      // 新增
+      products.value.push(returnedProduct)
+    }
   }
 
   isShowDialog.value = false
