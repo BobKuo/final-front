@@ -82,8 +82,6 @@ const $q = useQuasar()
 // handleSubmit(處理function)
 // values 表單所有欄位的值
 const submit = form.handleSubmit(async (values) => {
-  console.log('表單送出', values)
-
   try {
     // axios.post('/api/user', values)
     // userService.login(values)

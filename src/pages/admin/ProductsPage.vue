@@ -69,7 +69,7 @@
         </template>
       </q-table>
     </div>
-    <product-dialog v-model="isShowDialog" :product="dialogProduct" @close="closeDialog" />
+    <product-dialog v-model="isShowDialog" :product="dialogProduct" @close="handleDialogClose" />
   </q-page>
 </template>
 <script setup>
@@ -158,7 +158,6 @@ getProducts()
 
 // 點擊展開按鈕時，顯示所有圖片
 const showAllImages = (images) => {
-  console.log('所有圖片:', images)
   $q.dialog({
     title: '所有圖片',
     message: images
@@ -173,22 +172,16 @@ const isShowDialog = ref(false)
 const dialogProduct = ref(null)
 
 const openDialog = (product) => {
-  console.log('打開對話框', product)
-
   dialogProduct.value = product // 編輯時傳入商品，新增時傳 null
   isShowDialog.value = true
 }
 
-const closeDialog = () => {
-  console.log('關閉對話框', dialogProduct.value)
-
-  // 若是新增產品，將後端回傳的結果加進 products
-  if (dialogProduct.value) {
-    console.log('關閉對話框，重新載入商品列表')
+const handleDialogClose = (isRefresh) => {
+  if (isRefresh) {
     getProducts() // 重新載入商品列表
   }
 
   isShowDialog.value = false
-  dialogProduct.value = null // 重置商品資料
+  dialogProduct.value = null
 }
 </script>

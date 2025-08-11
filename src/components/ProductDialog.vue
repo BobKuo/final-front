@@ -3,12 +3,13 @@
     <q-card class="q-pa-md" style="min-width: 400px">
       <q-form @submit.prevent="submit">
         <q-card-section>
-          <div class="text-h6">新增商品</div>
+          <div class="text-h6">{{ props.product ? '編輯商品' : '新增商品' }}</div>
         </q-card-section>
 
         <q-card-section class="q-gutter-md">
           <q-input
             v-model="name.value.value"
+            deleteable
             :disable="isSubmitting"
             :error="!!name.errorMessage.value"
             :error-message="name.errorMessage.value"
@@ -40,6 +41,26 @@
             type="textarea"
             outlined
           ></q-input>
+          <!-- 顯示商品圖片 -->
+          <template v-if="props.product?.images.length > 0">
+            <div class="row">
+              <template v-for="(image, idx) in props.product.images" :key="idx">
+                <q-img :src="image" style="width: 20%" :alt="image">
+                  <!-- 刪除按鈕 -->
+                  <q-btn
+                    flat
+                    round
+                    dense
+                    icon="close"
+                    size="10px"
+                    class="absolute-top-right"
+                    @click="deleteImage(idx)"
+                  />
+                  <!-- <div class="absolute-bottom text-subtitle4 text-center">Caption</div> -->
+                </q-img>
+              </template>
+            </div>
+          </template>
           <VueFileAgent
             ref="fileAgent"
             v-model="fileRecords"
@@ -52,6 +73,10 @@
             :multiple="true"
             :maxFiles="5"
             max-size="1MB"
+            :errorText="{
+              type: 'Please select images, videos, pdf or zip files',
+              size: 'You selected a larger file!',
+            }"
           />
           <q-toggle
             :label="sell.value.value ? '上架中' : '未上架'"
@@ -61,8 +86,10 @@
             :error-message="sell.errorMessage.value"
           />
           <q-card-actions align="right">
-            <q-btn label="取消" color="secondary" @click="emit('close', false)" />
-            <q-btn label="新增" type="submit" :loading="isSubmitting" color="primary" />
+            <q-btn color="secondary" @click="closeDialog(false)">取消</q-btn>
+            <q-btn type="submit" :loading="isSubmitting" color="primary">{{
+              props.product ? '更新' : '新增'
+            }}</q-btn>
           </q-card-actions>
         </q-card-section>
       </q-form>
@@ -70,7 +97,7 @@
   </q-dialog>
 </template>
 <script setup>
-import { ref, useTemplateRef } from 'vue'
+import { ref, watch, useTemplateRef } from 'vue'
 import { useQuasar } from 'quasar'
 import { useField, useForm } from 'vee-validate'
 import * as yup from 'yup'
@@ -109,19 +136,50 @@ const price = useField('price')
 const category = useField('category')
 const description = useField('description')
 const sell = useField('sell')
+
 const fileRecords = ref([])
 const rawFileRecords = ref([])
 
+watch(
+  () => props.product,
+  (editProduct) => {
+    // 如果有傳入 product，則填入表單資料
+    if (editProduct) {
+      name.value.value = editProduct.name
+      price.value.value = editProduct.price
+      category.value.value = editProduct.category
+      description.value.value = editProduct.description
+      sell.value.value = editProduct.sell
+    }
+  },
+)
+
 const submit = handleSubmit(async (values) => {
   // 如果圖片欄位有錯誤，不執行
-  if (fileRecords.value[0]?.error) {
-    $q.dialog.error('請選擇有效的圖片檔案')
+  if (fileRecords.value.some((record) => record.error)) {
+    $q.notify({
+      type: 'negative',
+      message: '請選擇有效的圖片檔案',
+    })
     return
   }
+
   // 新增商品必須有圖片
   // 編輯商品沒有圖片就是沿用舊的圖片
   if (!props.product && fileRecords.value.length === 0) {
-    $q.dialog.error('請上傳商品圖片')
+    $q.dialog({
+      title: '錯誤',
+      message: '請上傳商品圖片',
+    })
+    return
+  }
+
+  // 圖片數量限制
+  if (props.product?.images.length + fileRecords?.value.length > 5) {
+    $q.dialog({
+      title: '錯誤',
+      message: `最多只能再上傳 ${5 - props.product.images.length} 張圖片`,
+    })
     return
   }
 
@@ -144,14 +202,16 @@ const submit = handleSubmit(async (values) => {
       })
     }
 
-    await (props.product ? productService.update(props.product._id, fd) : productService.create(fd))
+    const { data } = await (props.product
+      ? productService.update(props.product._id, fd)
+      : productService.create(fd))
 
     $q.notify({
       type: 'positive',
       message: props.product ? '商品更新成功' : '商品新增成功',
     })
 
-    closeDialog()
+    closeDialog(true)
   } catch (error) {
     console.error(error)
     $q.notify({
@@ -161,16 +221,27 @@ const submit = handleSubmit(async (values) => {
   }
 })
 
-const closeDialog = () => {
-  console.log('關閉對話框')
-
+const closeDialog = (isRefresh) => {
   // 重置表單
   resetForm()
 
   // 清空圖片欄位
   fileAgent.value.deleteFileRecord()
 
+  // 手動清空檔案列表 (上面的 deleteFileRecord 沒有清空檔案)
+  fileRecords.value = []
+  rawFileRecords.value = []
+
   // 關閉對話框
-  emit('close', false)
+  emit('close', isRefresh)
+}
+
+// 刪除圖片
+const deleteImage = (idx) => {
+  //props.product.images.splice(idx, 1) // 刪除圖片
+  $q.notify({
+    type: 'positive',
+    message: `圖片${idx}已刪除`,
+  })
 }
 </script>
