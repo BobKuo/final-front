@@ -4,16 +4,33 @@
     <q-separator />
 
     <q-card-section>
-      <div class="row no-wrap items-center">
+      <div class="row items-center">
         <div class="col text-h6 ellipsis">{{ product.name }}</div>
+        <q-badge
+          v-if="product.category"
+          class="q-ml-sm"
+          color="primary"
+          :label="product.category"
+          outline
+        />
         <q-badge color="orange" class="q-ml-sm"> 已售 {{ product.sold || 0 }} </q-badge>
       </div>
-      <q-rating v-model="stars" :max="5" size="32px" />
+      <q-rating
+        v-model="rating"
+        :max="5"
+        readonly
+        size="32px"
+        color="yellow"
+        icon="star_border"
+        icon-selected="star"
+        icon-half="star_half"
+        no-dimming
+      />
     </q-card-section>
 
     <q-card-section class="q-pt-none">
       <div class="text-subtitle1">${{ product.price }}</div>
-      <div class="text-caption text-grey">
+      <div class="text-caption text-grey" style="height: 30px; overflow: auto">
         {{ product.description }}
       </div>
     </q-card-section>
@@ -27,6 +44,9 @@
   </q-card>
 </template>
 <script setup>
+import { ref } from 'vue'
+
+const rating = ref(3)
 const { product } = defineProps({
   product: Object,
 })

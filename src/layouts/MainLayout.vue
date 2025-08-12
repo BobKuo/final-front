@@ -112,7 +112,7 @@ const toggleHeader = () => {
 
 //
 const onHeaderReveal = (value) => {
-  console.log(value ? '🔼 Header 出現（reveal）' : '🔽 Header 被收起（hide）')
+  // console.log(value ? '🔼 Header 出現（reveal）' : '🔽 Header 被收起（hide）')
   headerVisible.value = value
 }
 </script>
