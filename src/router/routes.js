@@ -8,10 +8,18 @@ const routes = [
       // { path: 'daily', component: () => import('pages/DailyPage.vue') },
       // { path: 'work', component: () => import('pages/WorkPage.vue') },
       // { path: 'paper', component: () => import('pages/PaperPage.vue') },
-      { path: 'shopping', component: () => import('pages/ShoppingPage.vue') },
+      {
+        path: 'shopping',
+        component: () => import('pages/ShoppingPage.vue'),
+        meta: { title: '購物' },
+      },
       // { path: 'clips', component: () => import('pages/ClipsPage.vue') },
       // { path: 'about', component: () => import('pages/AboutPage.vue') },
       // { path: 'contact', component: () => import('pages/ContactPage.vue') },
+      {
+        path: 'product/:id',
+        component: () => import('pages/product/ProductDetail.vue'),
+      },
       // {
       //   path: 'admin',
       //   component: () => import('pages/AdminPage.vue'),
