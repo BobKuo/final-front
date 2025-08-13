@@ -1,5 +1,5 @@
 <template>
-  <q-card class="my-card" flat bordered>
+  <q-card flat bordered>
     <q-card-section>
       <template v-if="product.images.length > 1">
         <q-carousel
@@ -64,7 +64,10 @@
 
     <q-card-section class="q-pt-none">
       <div class="text-subtitle1">${{ product.price }}</div>
-      <div class="text-caption text-grey" style="height: 30px; overflow: auto">
+      <div
+        class="text-caption text-grey"
+        style="height: 60px; overflow: auto; white-space: pre-line"
+      >
         {{ product.description }}
       </div>
     </q-card-section>
@@ -80,6 +83,7 @@
 <script setup>
 import { ref } from 'vue'
 // import router from 'src/router'
+
 const slide = ref(0)
 
 const rating = ref(3)

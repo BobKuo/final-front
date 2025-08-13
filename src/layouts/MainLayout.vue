@@ -50,7 +50,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view :key="$route.fullPath" />
       <q-page-sticky position="top">
         <q-btn @click="toggleHeader" flat round color="primary" icon="arrow_drop_down" />
       </q-page-sticky>
