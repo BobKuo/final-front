@@ -13,6 +13,11 @@ const routes = [
         component: () => import('pages/ShoppingPage.vue'),
         meta: { title: '購物' },
       },
+      {
+        path: 'cart',
+        component: () => import('pages/CartPage.vue'),
+        meta: { title: '購物車結帳' },
+      },
       // { path: 'clips', component: () => import('pages/ClipsPage.vue') },
       // { path: 'about', component: () => import('pages/AboutPage.vue') },
       // { path: 'contact', component: () => import('pages/ContactPage.vue') },

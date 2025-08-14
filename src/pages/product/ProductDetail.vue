@@ -1,5 +1,10 @@
 <template>
-  <q-page class="q-ma-xl flex flex-center">
+  <q-page class="q-ma-xl">
+    <q-breadcrumbs class="q-mb-lg">
+      <q-breadcrumbs-el icon="home" to="/">首頁</q-breadcrumbs-el>
+      <q-breadcrumbs-el icon="list" to="/shopping">商品列表</q-breadcrumbs-el>
+      <q-breadcrumbs-el>{{ product.name }}</q-breadcrumbs-el>
+    </q-breadcrumbs>
     <q-card flat bordered class="q-pa-lg shadow-2" style="width: 100%">
       <div class="row q-col-gutter-xl">
         <!-- 商品圖片區 -->
@@ -60,9 +65,16 @@
             </div>
           </div>
           <q-card-actions class="justify-start q-gutter-md">
-            <q-input v-model.number="quantity" type="number" :min="1" outlined square />
+            <q-input
+              v-model.number="quantity"
+              type="number"
+              input-class="text-center"
+              :min="1"
+              outlined
+              square
+            />
             <q-btn
-              icon="shopping_cart"
+              icon="add_shopping_cart"
               color="primary"
               label="加入購物車"
               :disabled="!product.sell"
@@ -72,6 +84,7 @@
         </div>
       </div>
     </q-card>
+    <!-- 下架提示 -->
     <div
       v-if="!product.sell"
       class="absolute full-width bg-black text-white"
@@ -92,9 +105,12 @@ import { useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
 import router from 'src/router'
 import productService from 'src/services/product'
+import userService from 'src/services/user'
+import { useUserStore } from 'src/stores/user'
 
 const route = useRoute()
 const $q = useQuasar()
+const userStore = useUserStore()
 
 const slide = ref(0)
 const quantity = ref(1)
@@ -129,4 +145,28 @@ const getProduct = async () => {
   }
 }
 getProduct()
+
+const addToCart = async () => {
+  try {
+    const { data } = await userService.cart({
+      product: route.params.id,
+      quantity: quantity.value,
+    })
+
+    // 更新購物車數量
+    userStore.cartTotal = data.result
+
+    $q.notify({
+      type: 'positive',
+      message: '已加入購物車',
+    })
+  } catch (error) {
+    console.error('Error fetching products:', error)
+    $q.notify({
+      type: 'negative',
+      message: '無法加入購物車',
+    })
+    router.push('/')
+  }
+}
 </script>

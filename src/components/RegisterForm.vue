@@ -13,7 +13,11 @@
       :disable="form.isSubmitting.value"
       :error="!!account.errorMessage.value"
       :error-message="account.errorMessage.value"
-    />
+    >
+      <template v-slot:before>
+        <q-icon name="account_box" />
+      </template>
+    </q-input>
 
     <!-- 信箱 -->
     <q-input
@@ -24,7 +28,11 @@
       :disable="form.isSubmitting.value"
       :error="!!email.errorMessage.value"
       :error-message="email.errorMessage.value"
-    />
+    >
+      <template v-slot:before>
+        <q-icon name="mail" />
+      </template>
+    </q-input>
 
     <!-- 密碼 -->
     <q-input
@@ -37,7 +45,11 @@
       :disable="form.isSubmitting.value"
       :error="!!password.errorMessage.value"
       :error-message="password.errorMessage.value"
-    />
+    >
+      <template v-slot:before>
+        <q-icon name="key" />
+      </template>
+    </q-input>
 
     <!-- 確認密碼 -->
     <q-input

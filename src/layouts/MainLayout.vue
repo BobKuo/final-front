@@ -10,10 +10,12 @@
     >
       <q-toolbar>
         <q-toolbar-title>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
-          </q-avatar>
-          JUDY WANG ART
+          <q-btn flat to="/">
+            <q-avatar>
+              <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
+            </q-avatar>
+            <span class="q-ml-md">JUDY WANG ART</span>
+          </q-btn>
         </q-toolbar-title>
 
         <q-tabs align="right">
@@ -53,6 +55,24 @@
       <router-view :key="$route.fullPath" />
       <q-page-sticky position="top">
         <q-btn @click="toggleHeader" flat round color="primary" icon="arrow_drop_down" />
+      </q-page-sticky>
+      <q-page-sticky
+        v-if="$route.path === '/shopping' || $route.path.startsWith('/product')"
+        position="top-right"
+        :offset="fabPos"
+      >
+        <q-btn
+          rounded
+          outline
+          icon="shopping_cart"
+          color="accent"
+          :disable="draggingFab"
+          v-touch-pan.prevent.mouse="moveFab"
+          label="結帳"
+          :to="'/cart'"
+        >
+          <q-badge color="red" rounded floating>{{ userStore.cartTotal }}</q-badge>
+        </q-btn>
       </q-page-sticky>
     </q-page-container>
 
@@ -114,5 +134,15 @@ const toggleHeader = () => {
 const onHeaderReveal = (value) => {
   // console.log(value ? '🔼 Header 出現（reveal）' : '🔽 Header 被收起（hide）')
   headerVisible.value = value
+}
+
+// 購物車
+const fabPos = ref([50, 18])
+const draggingFab = ref(false)
+const moveFab = (event) => {
+  draggingFab.value = event.isFirst !== true && event.isFinal !== true
+
+  fabPos.value = [fabPos.value[0] - event.delta.x, fabPos.value[1] + event.delta.y]
+  // fabPos.value = [fabPos.value[0] - event.delta.x, fabPos.value[1] - event.delta.y]
 }
 </script>
