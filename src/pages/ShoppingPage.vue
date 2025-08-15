@@ -10,36 +10,49 @@
         />
       </div>
       <div class="col-12">
-        <q-chip
-          v-for="(selected, category) in categoryOptions"
-          :key="category"
-          :label="category"
-          outline
-          color="primary"
-          v-model:selected="categoryOptions[category]"
-          @update:selected="
-            (selected) => {
-              // 當選擇的分類改變時，重置當前頁面為第一頁
-              currentPage = 1
-            }
-          "
-        />
-        <q-btn color="primary" flat icon-right="arrow_drop_down" :ripple="false" class="q-ml-sm">
-          {{ sortOptions[selectedSort].text }}
-          <q-menu transition-show="jump-down" transition-hide="jump-up">
-            <q-list style="min-width: 100px">
-              <q-item
-                v-for="(option, index) in sortOptions"
-                :key="index"
-                clickable
-                v-close-popup
-                @click="selectSortOption(index)"
-              >
-                <q-item-section>{{ option.text }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
+        <div class="row justify-between items-center">
+          <!-- 左側的 q-chip -->
+          <div class="col-auto">
+            <q-chip
+              v-for="(selected, category) in categoryOptions"
+              :key="category"
+              :label="category"
+              outline
+              color="primary"
+              v-model:selected="categoryOptions[category]"
+              @update:selected="
+                (selected) => {
+                  currentPage = 1
+                }
+              "
+            />
+          </div>
+          <!-- 右側的 q-btn -->
+          <div class="col-auto">
+            <q-btn
+              color="primary"
+              flat
+              icon-right="arrow_drop_down"
+              :ripple="false"
+              class="q-ml-sm"
+            >
+              {{ sortOptions[selectedSort].text }}
+              <q-menu transition-show="jump-down" transition-hide="jump-up">
+                <q-list style="min-width: 100px">
+                  <q-item
+                    v-for="(option, index) in sortOptions"
+                    :key="index"
+                    clickable
+                    v-close-popup
+                    @click="selectSortOption(index)"
+                  >
+                    <q-item-section>{{ option.text }}</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
+          </div>
+        </div>
       </div>
     </div>
     <div class="row">

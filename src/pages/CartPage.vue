@@ -3,7 +3,16 @@
     <div class="q-pa-md">
       <div class="row">
         <div class="col-12">
-          <h1 class="text-center">購物車</h1>
+          <div class="text-h5 text-center">購物車</div>
+        </div>
+        <div class="col-12">
+          <q-list bordered separator>
+            <q-item v-for="item in cart" :key="item._id">
+              <q-item-section>{{ item.product.name }}</q-item-section>
+              <q-item-section>{{ item.quantity }}</q-item-section>
+              <q-item-section>{{ item.product.price * item.quantity }}</q-item-section>
+            </q-item>
+          </q-list>
         </div>
       </div>
     </div>
