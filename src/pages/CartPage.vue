@@ -1,21 +1,88 @@
 <template>
   <q-page class="flex flex-center">
-    <div class="q-pa-md">
-      <div class="row">
-        <div class="col-12">
-          <div class="text-h5 text-center">購物車</div>
-        </div>
-        <div class="col-12">
-          <q-list bordered separator>
-            <q-item v-for="item in cart" :key="item._id">
-              <q-item-section>{{ item.product.name }}</q-item-section>
-              <q-item-section>{{ item.quantity }}</q-item-section>
-              <q-item-section>{{ item.product.price * item.quantity }}</q-item-section>
-            </q-item>
-          </q-list>
-        </div>
-      </div>
-    </div>
+    <q-list bordered padding separator class="shadow-2" style="width: 80%">
+      <q-item-label header>購物車</q-item-label>
+      <q-separator></q-separator>
+
+      <!-- 商品項目 -->
+      <template v-for="item in cart" :key="item._id">
+        <q-item>
+          <q-item-section top thumbnail class="q-ml-none" style="width: 200px; height: 100px">
+            <img
+              :src="item.product.images[0]"
+              style="object-fit: contain; width: 100%; height: 100%"
+            />
+          </q-item-section>
+
+          <q-separator vertical />
+
+          <q-item-section>
+            <q-item-label class="q-ml-md">{{ item.product.name }}</q-item-label>
+            <q-item-label caption class="text-center">價格: ${{ item.product.price }}</q-item-label>
+          </q-item-section>
+
+          <q-separator vertical />
+
+          <q-item-section style="height: 100px">
+            <q-item-label caption style="overflow: auto; white-space: pre-line">{{
+              item.product.description
+            }}</q-item-label>
+          </q-item-section>
+
+          <q-separator vertical />
+
+          <q-item-section side>
+            <q-input
+              v-model.number="item.quantity"
+              type="number"
+              input-class="text-center"
+              :min="1"
+              outlined
+              square
+            />
+            <div class="row q-mt-sm">
+              <q-btn
+                icon="favorite"
+                color="red"
+                outline
+                dense
+                label="移入"
+                @click="updateCart(item.quantity + 1, item, cart.indexOf(item))"
+              />
+              <q-btn
+                icon="delete"
+                color="secondary"
+                outline
+                dense
+                label="刪除"
+                @click="updateCart(0, item, cart.indexOf(item))"
+                class="q-ml-md"
+              />
+            </div>
+            <q-item-label class="q-mt-md"
+              >項目總價: ${{ item.product.price * item.quantity }}</q-item-label
+            >
+          </q-item-section>
+        </q-item>
+      </template>
+
+      <!-- 總計 -->
+      <q-item>
+        <q-item-section>
+          <q-item-label class="q-ml-md">總計</q-item-label>
+          <q-item-label class="text-center">${{ totalPrice }}</q-item-label>
+        </q-item-section>
+        <q-item-section>
+          <q-btn
+            :disabled="checkoutDisable"
+            @click="checkout"
+            label="結帳"
+            color="primary"
+            class="full-width"
+          />
+        </q-item-section>
+      </q-item>
+    </q-list>
   </q-page>
 </template>
 
