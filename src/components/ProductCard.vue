@@ -74,14 +74,19 @@
 
     <q-separator />
 
-    <q-card-actions>
-      <q-btn flat round icon="add_shopping_cart" />
-      <q-btn flat color="primary"> 加入購物車 </q-btn>
+    <q-card-actions class="justify-end">
+      <q-btn outline icon="favorite" color="red" />
+      <q-btn outline icon="add_shopping_cart" color="primary" @click="addToCart">
+        加入購物車
+      </q-btn>
     </q-card-actions>
   </q-card>
 </template>
 <script setup>
 import { ref } from 'vue'
+import userService from 'src/services/user'
+import { useUserStore } from 'src/stores/user'
+import { useQuasar } from 'quasar'
 // import router from 'src/router'
 
 const slide = ref(0)
@@ -91,10 +96,29 @@ const { product } = defineProps({
   product: Object,
 })
 
-// const goToProductDetail = () => {
-//   console.log('Navigating to product detail:', product._id)
-//   if (product && product._id) {
-//     router.push(`/product/${product._id}`)
-//   }
-// }
+const userStore = useUserStore()
+const $q = useQuasar()
+
+const addToCart = async () => {
+  try {
+    const { data } = await userService.cart({
+      product: product._id,
+      quantity: 1,
+    })
+
+    // 更新購物車數量
+    userStore.cartTotal = data.result
+
+    $q.notify({
+      type: 'positive',
+      message: '已加入購物車',
+    })
+  } catch (error) {
+    console.error('Error fetching products:', error)
+    $q.notify({
+      type: 'negative',
+      message: '無法加入購物車',
+    })
+  }
+}
 </script>

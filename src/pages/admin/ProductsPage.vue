@@ -57,6 +57,13 @@
             </div>
           </q-td>
         </template>
+        <template #body-cell-description="props">
+          <q-td :props="props">
+            <div style="width: 200px; height: 100px; overflow: scroll; white-space: pre-line">
+              {{ props.row.description }}
+            </div>
+          </q-td>
+        </template>
         <template #body-cell-sell="props">
           <q-td :props="props">
             <q-icon v-if="props.row.sell" name="check" color="green" />
@@ -125,7 +132,11 @@ const columns = [
     align: 'right',
     sortable: true,
   },
-  { name: 'description', label: '描述', field: 'description' },
+  {
+    name: 'description',
+    label: '描述',
+    field: 'description',
+  },
   { name: 'sell', label: '上架', field: 'sell' },
   {
     name: 'createdAt',
