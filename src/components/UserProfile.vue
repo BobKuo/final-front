@@ -1,5 +1,11 @@
 <template>
-  <h6>會員：{{ userStore.account }}</h6>
+  <h6>{{ userStore.role === 'user' ? '會員' : '管理員' }}： {{ userStore.account }}</h6>
+  <q-btn
+    color="primary"
+    :to="userStore.role === 'user' ? '/orders' : '/admin/orders'"
+    class="q-mb-lg"
+    >{{ userStore.role === 'user' ? '查看訂單' : '管理訂單' }}</q-btn
+  >
   <q-btn @click="logout" label="登出" />
 </template>
 

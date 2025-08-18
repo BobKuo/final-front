@@ -53,21 +53,6 @@ const columns = [
     field: (item) => new Date(item.createdAt).toLocaleString(),
     sortable: true,
   },
-  { name: 'user', label: '使用者', field: (item) => item.user.account, sortable: true },
-  { name: 'cartobj', label: '商品', field: 'cart', sortable: false },
-  {
-    name: 'totalPrice',
-    label: '總金額',
-    field: (item) =>
-      item.cart.reduce((total, item) => total + item.product.price * item.quantity, 0),
-  },
-  { name: 'cartobj', label: '商品', field: 'cart', sortable: false },
-  {
-    name: 'totalPrice',
-    label: '總金額',
-    field: (item) =>
-      item.cart.reduce((total, item) => total + item.product.price * item.quantity, 0),
-  },
   { name: 'cartobj', label: '商品', field: 'cart', sortable: false },
   {
     name: 'totalPrice',
@@ -79,7 +64,7 @@ const columns = [
 
 const getOrders = async () => {
   try {
-    const { data } = await orderService.getAll()
+    const { data } = await orderService.getMy()
     orders.value = data.result
   } catch (error) {
     console.error('Error fetching orders:', error)

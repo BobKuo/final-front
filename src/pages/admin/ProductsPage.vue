@@ -49,7 +49,7 @@
               <!-- 如果有多張圖片，顯示展開按鈕 -->
               <q-btn
                 v-if="props.row.images.length > 1"
-                flat
+                outline
                 dense
                 label="更多"
                 @click="showAllImages(props.row.images)"
@@ -59,7 +59,7 @@
         </template>
         <template #body-cell-description="props">
           <q-td :props="props">
-            <div style="width: 200px; height: 100px; overflow: scroll; white-space: pre-line">
+            <div style="width: 200px; height: 100px; overflow-y: scroll; white-space: pre-line">
               {{ props.row.description }}
             </div>
           </q-td>

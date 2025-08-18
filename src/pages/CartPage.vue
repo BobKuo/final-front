@@ -70,10 +70,10 @@
       <!-- 總計 -->
       <q-item>
         <q-item-section>
-          <q-item-label class="q-ml-md">總計</q-item-label>
-          <q-item-label class="text-center">${{ totalPrice }}</q-item-label>
+          <q-item-label class="text-right">總計</q-item-label>
+          <q-item-label class="text-right">${{ totalPrice }}</q-item-label>
         </q-item-section>
-        <q-item-section>
+        <q-item-section side>
           <q-btn
             @click="checkout"
             :disable="checkoutDisable"
@@ -93,10 +93,12 @@ import { useQuasar } from 'quasar'
 import orderService from 'src/services/order'
 import userService from 'src/services/user'
 import { useUserStore } from 'src/stores/user'
-import router from 'src/router'
+// import router from 'src/router'
+import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const userStore = useUserStore()
+const router = useRouter()
 
 const cart = ref([])
 
@@ -159,7 +161,18 @@ const checkout = async () => {
     await orderService.create()
 
     userStore.cartTotal = 0
-    router.push('/orders')
+    cart.value = []
+
+    $q.notify({
+      spinner: true,
+      type: 'positive',
+      timeout: 1500,
+      message: '結帳成功！ 將跳轉到訂單頁面',
+    })
+
+    setTimeout(() => {
+      router.push('/orders')
+    }, 3000)
   } catch (error) {
     console.error(error)
     $q.notify({
