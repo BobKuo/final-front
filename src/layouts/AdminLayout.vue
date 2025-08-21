@@ -46,6 +46,7 @@ import { ref } from 'vue'
 const leftDrawerOpen = ref(false)
 
 const navItems = [
+  { title: '作品管理', to: '/admin/works', icon: 'palette' },
   { title: '商品管理', to: '/admin/products', icon: 'shopping_bag' },
   { title: '訂單管理', to: '/admin/orders', icon: 'list_alt' },
   { title: '首頁', to: '/', icon: 'home' },
