@@ -42,22 +42,21 @@
             outlined
           ></q-input>
           <!-- 顯示商品圖片 -->
-          <template v-if="props.product?.images.length > 0">
+          <template v-if="existedImages.length > 0">
             <div class="row">
-              <template v-for="(image, idx) in props.product.images" :key="idx">
-                <q-img :src="image" style="width: 20%" :alt="image">
-                  <!-- 刪除按鈕 -->
+              <template v-for="(image, idx) in existedImages" :key="idx">
+                <div class="image-container" style="position: relative; width: 20%">
+                  <q-img :src="image" style="width: 100%" :alt="image" />
                   <q-btn
-                    flat
                     round
                     dense
                     icon="close"
-                    size="10px"
-                    class="absolute-top-right"
-                    @click="deleteImage(idx)"
+                    color="negative"
+                    class="delete-btn"
+                    size="8px"
+                    @click="selectDeletedImage(idx)"
                   />
-                  <!-- <div class="absolute-bottom text-subtitle4 text-center">Caption</div> -->
-                </q-img>
+                </div>
               </template>
             </div>
           </template>
@@ -72,11 +71,7 @@
             help-text="選擇或拖拽檔案"
             :multiple="true"
             :maxFiles="5"
-            max-size="1MB"
-            :errorText="{
-              type: 'Please select images, videos, pdf or zip files',
-              size: 'You selected a larger file!',
-            }"
+            max-size="5MB"
           />
           <q-toggle
             :label="sell.value.value ? '上架中' : '未上架'"
@@ -86,7 +81,7 @@
             :error-message="sell.errorMessage.value"
           />
           <q-card-actions align="right">
-            <q-btn color="secondary" @click="closeDialog(false)">取消</q-btn>
+            <q-btn color="secondary" @click="closeDialog">取消</q-btn>
             <q-btn type="submit" :loading="isSubmitting" color="primary">{{
               props.product ? '更新' : '新增'
             }}</q-btn>
@@ -102,6 +97,8 @@ import { useQuasar } from 'quasar'
 import { useField, useForm } from 'vee-validate'
 import * as yup from 'yup'
 import productService from 'src/services/product'
+
+const FOLDERNAME = 'products'
 
 const model = defineModel()
 
@@ -140,6 +137,9 @@ const sell = useField('sell')
 const fileRecords = ref([])
 const rawFileRecords = ref([])
 
+const existedImages = ref([])
+const deletedImages = ref([])
+
 watch(
   () => props.product,
   (editProduct) => {
@@ -150,6 +150,13 @@ watch(
       category.value.value = editProduct.category
       description.value.value = editProduct.description
       sell.value.value = editProduct.sell
+
+      // 使用展開運算符複製圖片陣列
+      // 這樣可以避免直接修改原始陣列
+      existedImages.value = [...editProduct.images]
+
+      // 清空刪除的圖片
+      deletedImages.value = []
     }
   },
 )
@@ -193,6 +200,8 @@ const submit = handleSubmit(async (values) => {
     fd.append('category', values.category)
     fd.append('description', values.description)
     fd.append('sell', values.sell)
+    fd.append('folder', FOLDERNAME)
+    fd.append('deletedImages', JSON.stringify(deletedImages.value))
 
     if (fileRecords.value.length > 0) {
       const images = fileRecords.value.filter((record) => record.file).map((record) => record.file)
@@ -238,12 +247,22 @@ const closeDialog = (returnedProduct) => {
   emit('close', returnedProduct)
 }
 
-// 刪除圖片
-const deleteImage = (idx) => {
-  //props.product.images.splice(idx, 1) // 刪除圖片
-  $q.notify({
-    type: 'positive',
-    message: `圖片${idx}已刪除`,
-  })
+// 選擇刪除圖片
+const selectDeletedImage = (idx) => {
+  deletedImages.value.push(existedImages.value[idx])
+  existedImages.value.splice(idx, 1)
 }
 </script>
+
+<style scoped>
+.image-container {
+  position: relative;
+}
+
+.delete-btn {
+  position: absolute;
+  top: -8px;
+  right: 0px;
+  z-index: 1000; /* 確保按鈕在最上層 */
+}
+</style>

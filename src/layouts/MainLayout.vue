@@ -12,7 +12,8 @@
         <q-toolbar-title>
           <q-btn flat to="/">
             <q-avatar>
-              <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
+              <img src="~assets/logo.jpg" alt="logo" />
+              <!-- <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" /> -->
             </q-avatar>
             <span class="q-ml-md">JUDY WANG ART</span>
           </q-btn>

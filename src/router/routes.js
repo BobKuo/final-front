@@ -8,7 +8,11 @@ const routes = [
       // { path: 'daily', component: () => import('pages/DailyPage.vue') },
       // { path: 'work', component: () => import('pages/WorkPage.vue') },
       // { path: 'paper', component: () => import('pages/PaperPage.vue') },
-      { path: 'orders', component: () => import('src/pages/OrdersPage.vue'), meta: { title: '訂單紀錄' }, },
+      {
+        path: 'orders',
+        component: () => import('src/pages/OrdersPage.vue'),
+        meta: { title: '訂單紀錄' },
+      },
       {
         path: 'shopping',
         component: () => import('pages/ShoppingPage.vue'),
@@ -39,8 +43,21 @@ const routes = [
     component: () => import('layouts/AdminLayout.vue'),
     meta: { title: '管理員', login: 'login-only', admin: true },
     children: [
-      { path: 'products', component: () => import('pages/admin/ProductsPage.vue'), meta: { title: '商品管理' } },
-      { path: 'orders', component: () => import('pages/admin/OrdersPage.vue'), meta: { title: '訂單管理' } },
+      {
+        path: 'works',
+        component: () => import('pages/admin/WorksPage.vue'),
+        meta: { title: '作品管理' },
+      },
+      {
+        path: 'products',
+        component: () => import('pages/admin/ProductsPage.vue'),
+        meta: { title: '商品管理' },
+      },
+      {
+        path: 'orders',
+        component: () => import('pages/admin/OrdersPage.vue'),
+        meta: { title: '訂單管理' },
+      },
     ],
   },
 
