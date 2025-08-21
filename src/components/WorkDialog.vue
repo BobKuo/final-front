@@ -27,6 +27,7 @@
           <div style="border: 1px solid #aaa; border-radius: 4px; padding: 8px">
             <div class="row justify-between">
               <div class="text-subtitle1 text-grey-7">標籤</div>
+              <!-- <div>{{ selectedTags }}</div> -->
               <q-btn
                 class="q-mb-xs"
                 color="primary"
@@ -174,15 +175,16 @@ const tagOptions = ref([]) // 從 API 獲取的標籤列表
 const selectedTags = ref([]) // 已選中的標籤
 
 watch(model, (newValue) => {
-  if (newValue) {
-    console.log('Work 對話框已開啟，執行初始化邏輯')
+  // 新增作品時 執行 fetchTags
+  // 編輯作品時 留到props.work的監聽去執行fetchTags
+  if (newValue && !props.work) {
     fetchTags() // 當對話框開啟時執行
   }
 })
 
 watch(
   () => props.work,
-  (editWork) => {
+  async (editWork) => {
     // 如果有傳入 work，則填入表單資料
     if (editWork) {
       name.value.value = editWork.name
@@ -198,6 +200,21 @@ watch(
 
       // 清空刪除的圖片
       deletedImages.value = []
+
+      // 等待fetchTags 來設定tagOptions
+      await fetchTags()
+
+      // 先刪除tags中 不在tagOptions裡的標籤
+      // 再將結果設定給selectedTags
+
+      // 例如：假設有以下情況
+      // tags:['運動', '日本']
+      // tagOptions:[{ label: '日本', value: 'bbb' }, { label: '生活', value: 'ccc' }]  (運動已被停用)
+      // selectedTags.value = ['bbb']（只留下有對應的 id）
+      //
+      selectedTags.value = tagOptions.value
+        .filter((option) => tags.value.includes(option.label))
+        .map((option) => option.value)
     }
   },
 )
@@ -238,11 +255,11 @@ const submit = handleSubmit(async (values) => {
     const fd = new FormData()
     fd.append('name', values.name)
     fd.append('category', values.category)
-    console.log('寫入的標籤:', selectedTags.value)
-    fd.append('tags', selectedTags.value) // 傳送選中的標籤
+    fd.append('tags', JSON.stringify(selectedTags.value)) // 傳送選中的標籤
     fd.append('content', values.content)
     fd.append('post', values.post)
     fd.append('folder', FOLDERNAME)
+    fd.append('deletedImages', JSON.stringify(deletedImages.value))
 
     if (fileRecords.value.length > 0) {
       const images = fileRecords.value.filter((record) => record.file).map((record) => record.file)
@@ -294,8 +311,6 @@ const selectDeletedImage = (idx) => {
 
 // 獲取標籤列表
 const fetchTags = async () => {
-  console.log('獲取標籤列表')
-
   // 清空已選擇的標籤
   selectedTags.value = []
   tagOptions.value = []
@@ -305,28 +320,15 @@ const fetchTags = async () => {
     const { data } = await tagService.getAll()
 
     allTags.value = data.tags
-    console.log('獲取標籤列表成功:', allTags.value)
-
-    console.log('+++++', selectedTags.value)
+    console.log('獲取標籤列表')
 
     // 先取出所有已啟用的標籤選項
     tagOptions.value = data.tags
       .filter((tag) => tag.enable)
       .map((tag) => ({
+        value: tag._id,
         label: tag.name,
-        value: tag.name,
       }))
-
-    console.log('|||標籤選項:', tagOptions.value)
-    console.log('-----:', tags.value)
-    console.log('=====:', selectedTags.value)
-    // 如果tags裡面有 將對應的標籤設為選中
-    selectedTags.value = tags.value.filter((tag) =>
-      tagOptions.value.some((option) => option.value === tag),
-    )
-
-    console.log('作品標籤:', tags.value)
-    console.log('已選擇的標籤:', selectedTags.value)
 
     // tagOptions.value = [
     //   { label: '科技', value: '科技' },

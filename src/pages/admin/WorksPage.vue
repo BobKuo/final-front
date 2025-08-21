@@ -56,6 +56,19 @@
             </div>
           </q-td>
         </template>
+        <template #body-cell-tags="props">
+          <q-td :props="props">
+            <q-badge
+              v-for="(tag, idx) in props.row.tags"
+              :key="idx"
+              color="primary"
+              class="q-mr-xs"
+              outline
+            >
+              {{ tag }}
+            </q-badge>
+          </q-td>
+        </template>
         <template #body-cell-content="props">
           <q-td :props="props">
             <div style="width: 200px; height: 100px; overflow-y: auto; white-space: pre-line">
@@ -129,7 +142,7 @@ const columns = [
   { name: 'name', label: '名稱', field: 'name', sortable: true },
   { name: 'images', label: '圖片', field: 'images', align: 'center', sortable: false },
   { name: 'category', label: '分類', field: 'category' },
-  // { name: 'tags', label: '標籤', field: 'tags' },
+  { name: 'tags', label: '標籤', field: (item) => item.tags.join(', ') },
   { name: 'content', label: '內容', field: 'content' },
   { name: 'statistics', label: '統計', field: 'statistics' },
   {
@@ -182,7 +195,6 @@ const openDialog = (work) => {
 }
 
 const handleDialogClose = (returnedWork) => {
-  console.log('對話框關閉，返回的作品:', returnedWork)
   if (returnedWork) {
     const index = works.value.findIndex((w) => w._id === returnedWork._id)
     if (index !== -1) {
