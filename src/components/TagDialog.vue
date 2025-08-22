@@ -6,8 +6,26 @@
       </q-card-section>
       <q-card-section>
         <!-- 新增標籤 -->
-        <q-input v-model="newTagName" label="新增標籤" outlined clearable @keyup.enter="addTag" />
-        <q-btn color="primary" label="新增" @click="addTag" class="q-mt-sm" />
+        <q-input
+          bottom-slots
+          v-model="newTagName"
+          label="新增標籤"
+          clearable
+          counter
+          outlined
+          maxlength="10"
+          @keyup.enter="addTag"
+        >
+          <template v-slot:before>
+            <q-icon name="label"></q-icon>
+          </template>
+
+          <template v-slot:hint> </template>
+
+          <template v-slot:append>
+            <q-btn round dense flat icon="add" @click="addTag"></q-btn>
+          </template>
+        </q-input>
       </q-card-section>
       <q-card-section>
         <!-- 標籤列表 -->
@@ -55,7 +73,7 @@
       </q-card-section>
       <q-card-actions align="right">
         <q-btn color="secondary" @click="closeDialog(false)">取消</q-btn>
-        <q-btn color="primary" @click="closeDialog(true)">確定</q-btn>
+        <q-btn color="primary" @click="closeDialog(true)">儲存</q-btn>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -189,6 +207,6 @@ const closeDialog = async (confirmed) => {
   // 清空輸入框
   newTagName.value = ''
   // 關閉對話框
-  emit('close', confirmed)
+  emit('close')
 }
 </script>

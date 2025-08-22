@@ -58,15 +58,20 @@
         </template>
         <template #body-cell-tags="props">
           <q-td :props="props">
-            <q-badge
-              v-for="(tag, idx) in props.row.tags"
-              :key="idx"
-              color="primary"
-              class="q-mr-xs"
-              outline
-            >
-              {{ tag }}
-            </q-badge>
+            <div v-if="props.row.tags.length > 0" class="row q-gutter-xs" style="width: 150px">
+              <template v-for="tag in props.row.tags" :key="tag._id">
+                <q-badge v-if="tag.enable" color="primary" class="q-mr-xs">{{ tag.name }}</q-badge>
+                <q-badge
+                  v-else
+                  color="grey"
+                  style="text-decoration: line-through"
+                  class="q-mr-xs"
+                  outline
+                >
+                  {{ tag.name }}</q-badge
+                >
+              </template>
+            </div>
           </q-td>
         </template>
         <template #body-cell-content="props">
@@ -78,7 +83,7 @@
         </template>
         <template #body-cell-post="props">
           <q-td :props="props">
-            <q-icon v-if="props.row.post" name="check" color="green" />
+            <q-icon v-if="props.row.post" name="check" size="md" color="green" />
           </q-td>
         </template>
         <template #body-cell-statistics="props">
@@ -139,10 +144,10 @@ const $q = useQuasar()
 const columns = [
   { name: 'action', label: '操作', field: 'action' },
   { name: 'post', label: '發佈', field: 'post' },
-  { name: 'name', label: '名稱', field: 'name', sortable: true },
+  { name: 'name', label: '名稱', field: 'name', align: 'left', sortable: true },
   { name: 'images', label: '圖片', field: 'images', align: 'center', sortable: false },
   { name: 'category', label: '分類', field: 'category' },
-  { name: 'tags', label: '標籤', field: (item) => item.tags.join(', ') },
+  { name: 'tags', label: '標籤', field: (item) => item.tags.join(', '), align: 'left' },
   { name: 'content', label: '內容', field: 'content' },
   { name: 'statistics', label: '統計', field: 'statistics' },
   {
@@ -194,17 +199,9 @@ const openDialog = (work) => {
   isShowDialog.value = true
 }
 
-const handleDialogClose = (returnedWork) => {
-  if (returnedWork) {
-    const index = works.value.findIndex((w) => w._id === returnedWork._id)
-    if (index !== -1) {
-      // 更新
-      works.value[index] = returnedWork
-    } else {
-      // 新增
-      works.value.push(returnedWork)
-    }
-  }
+const handleDialogClose = () => {
+  // 因為有標籤更新的問題，回到頁面時需要重新獲取作品列表
+  getWorks()
 
   isShowDialog.value = false
   dialogWork.value = null

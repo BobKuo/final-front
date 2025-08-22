@@ -44,7 +44,14 @@
               v-model="selectedTags"
               inline
               dense
-            />
+            >
+              <template v-slot:label="opt">
+                <span v-if="opt.enable" class="q-mr-xs">{{ opt.label }}</span>
+                <span v-else style="text-decoration: line-through" class="text-grey-5 q-mr-xs">{{
+                  opt.label
+                }}</span>
+              </template>
+            </q-option-group>
           </div>
           <q-input
             v-model="content.value.value"
@@ -130,12 +137,13 @@ const fileAgent = useTemplateRef('fileAgent')
 
 const categoryOptions = [
   '普迪系列',
-  '幾何動物系列',
+  '幾何動物',
   '字母系列',
   '白日夢系列',
-  '動物喝茶系列',
+  '動物喝茶',
   '注音系列',
-  '365日常系列',
+  '365日常',
+  '生活雜記',
   '其他',
 ]
 
@@ -175,16 +183,27 @@ const tagOptions = ref([]) // 從 API 獲取的標籤列表
 const selectedTags = ref([]) // 已選中的標籤
 
 watch(model, (newValue) => {
-  // 新增作品時 執行 fetchTags
-  // 編輯作品時 留到props.work的監聽去執行fetchTags
+  // 新增作品
   if (newValue && !props.work) {
-    fetchTags() // 當對話框開啟時執行
+    // 清空form表單以外的資料
+    tags.value = []
+    statistics.value = {
+      views: 0,
+      likes: [],
+    }
+
+    existedImages.value = []
+    deletedImages.value = []
+
+    // 新增作品時 執行 fetchTags
+    // 編輯作品時 留到props.work的監聽去執行fetchTags
+    fetchTags()
   }
 })
 
 watch(
   () => props.work,
-  async (editWork) => {
+  (editWork) => {
     // 如果有傳入 work，則填入表單資料
     if (editWork) {
       name.value.value = editWork.name
@@ -201,20 +220,7 @@ watch(
       // 清空刪除的圖片
       deletedImages.value = []
 
-      // 等待fetchTags 來設定tagOptions
-      await fetchTags()
-
-      // 先刪除tags中 不在tagOptions裡的標籤
-      // 再將結果設定給selectedTags
-
-      // 例如：假設有以下情況
-      // tags:['運動', '日本']
-      // tagOptions:[{ label: '日本', value: 'bbb' }, { label: '生活', value: 'ccc' }]  (運動已被停用)
-      // selectedTags.value = ['bbb']（只留下有對應的 id）
-      //
-      selectedTags.value = tagOptions.value
-        .filter((option) => tags.value.includes(option.label))
-        .map((option) => option.value)
+      fetchTags()
     }
   },
 )
@@ -322,13 +328,13 @@ const fetchTags = async () => {
     allTags.value = data.tags
     console.log('獲取標籤列表')
 
-    // 先取出所有已啟用的標籤選項
-    tagOptions.value = data.tags
-      .filter((tag) => tag.enable)
-      .map((tag) => ({
-        value: tag._id,
-        label: tag.name,
-      }))
+    // 設定標籤選項
+    tagOptions.value = data.tags.map((tag) => ({
+      value: tag._id,
+      label: tag.name,
+      enable: tag.enable,
+      color: tag.enable ? 'primary' : 'grey',
+    }))
 
     // tagOptions.value = [
     //   { label: '科技', value: '科技' },
@@ -337,6 +343,18 @@ const fetchTags = async () => {
     //   { label: '教育', value: '教育' },
     //   { label: '其他', value: '其他' },
     // ]
+
+    // 先刪除tags中 不在tagOptions裡的標籤
+    // 再將結果設定給selectedTags
+    // 例如：假設有以下情況
+    // tags:[{name:'運動', id:'aaa'}, {name:'日本', id:'bbb'}]
+    // tagOptions:[{ label: '南韓', value: 'bbb' }, { label: '生活', value: 'ccc' }]  (運動已被停用)
+    // selectedTags.value = ['bbb']（只留下有對應的 id）
+    //
+
+    selectedTags.value = tagOptions.value
+      .filter((option) => tags.value.some((tag) => tag._id === option.value))
+      .map((option) => option.value)
   } catch (error) {
     console.error('獲取標籤失敗', error)
   }
@@ -349,13 +367,11 @@ const openTagDialog = () => {
   isShowDialog.value = true
 }
 
-const handleDialogClose = (isConfirmed) => {
+const handleDialogClose = () => {
   isShowDialog.value = false
 
-  if (isConfirmed) {
-    console.log('重新獲取標籤列表')
-    fetchTags() // 重新獲取標籤列表
-  }
+  console.log('重新獲取標籤列表')
+  fetchTags() // 重新獲取標籤列表
 }
 </script>
 
