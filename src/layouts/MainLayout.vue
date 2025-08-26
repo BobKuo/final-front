@@ -5,7 +5,7 @@
       reveal
       @reveal="onHeaderReveal"
       bordered
-      class="bg-primary text-white"
+      class="bg-primary text-white my-header"
       height-hint="98"
     >
       <q-toolbar>
@@ -77,13 +77,12 @@
       </q-page-sticky>
     </q-page-container>
 
-    <q-footer elevated class="bg-grey-8 text-white">
+    <q-footer elevated class="bg-grey-8 text-white my-footer">
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
             <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
           </q-avatar>
-          <div>Title</div>
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>
@@ -147,3 +146,17 @@ const moveFab = (event) => {
   // fabPos.value = [fabPos.value[0] - event.delta.x, fabPos.value[1] - event.delta.y]
 }
 </script>
+<style scoped>
+.my-header {
+  height: var(--app-header-height);
+}
+
+.my-footer {
+  height: var(--app-footer-height);
+}
+
+/* 確保 toolbar 的高度也配合 */
+.my-header .q-toolbar {
+  min-height: var(--app-header-height);
+}
+</style>

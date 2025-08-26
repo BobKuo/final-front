@@ -6,7 +6,7 @@
           <div class="slide__content" :style="{ backgroundColor: slide.backgroundColor }">
             <div class="slide__container">
               <h2 class="slide__heading" v-html="slide.title"></h2>
-              <div class="slide__img-wrapper">
+              <figure class="slide__img-cont">
                 <img
                   v-for="(imageUrl, imgIndex) in slide.images"
                   :key="imgIndex"
@@ -14,7 +14,7 @@
                   :src="imageUrl"
                   :alt="`${slide.title} - Image ${imgIndex + 1}`"
                 />
-              </div>
+              </figure>
             </div>
           </div>
         </div>
@@ -23,7 +23,7 @@
 
     <section class="overlay">
       <div class="overlay__content">
-        <p class="overlay__count"><span class="count"></span></p>
+        <p class="overlay__count">0<span class="count">1</span></p>
         <figure class="overlay__img-cont">
           <img
             v-for="(slide, index) in slides"
@@ -41,19 +41,18 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { gsap } from 'gsap'
 import { Observer } from 'gsap/Observer'
-import { TextPlugin } from 'gsap/TextPlugin'
 
 // 註冊 GSAP 插件
 gsap.registerPlugin(Observer)
-gsap.registerPlugin(TextPlugin)
 
 // 定義幻燈片資料
 const slides = ref([
   {
     title: 'ANIMAL-TEA',
-    displayText: '1 動物茶',
     images: [
       'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
+      'https://images.unsplash.com/photo-1544787219-7f47ccb76574?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
     ],
     overlayImage:
       'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTU4Mw&ixlib=rb-1.2.1&q=80&w=800',
@@ -61,7 +60,6 @@ const slides = ref([
   },
   {
     title: 'ALPHABET',
-    displayText: '2字母',
     images: [
       'https://images.unsplash.com/photo-1558603668-6570496b66f8?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=85&w=400',
       'https://images.unsplash.com/photo-1456324504439-367cee3b3c32?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=85&w=400',
@@ -72,11 +70,8 @@ const slides = ref([
   },
   {
     title: 'GEOMETRY-ANIMAL',
-    displayText: '3幾何動物',
     images: [
       'https://images.unsplash.com/photo-1537165924986-cc3568f5d454?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=85&w=400',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
-      'https://images.unsplash.com/photo-1544787219-7f47ccb76574?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
     ],
     overlayImage:
       'https://images.unsplash.com/photo-1579830341096-05f2f31b8259?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTQ5Ng&ixlib=rb-1.2.1&q=80&w=800',
@@ -84,12 +79,9 @@ const slides = ref([
   },
   {
     title: 'PUTTY',
-    displayText: '4油灰',
     images: [
       'https://images.unsplash.com/photo-1589271243958-d61e12b61b97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=80&w=400',
       'https://images.unsplash.com/photo-1493612276216-ee3925520721?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=80&w=400',
-      'https://images.unsplash.com/photo-1537165924986-cc3568f5d454?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=85&w=400',
-      'https://images.unsplash.com/photo-1544787219-7f47ccb76574?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
     ],
     overlayImage:
       'https://images.unsplash.com/photo-1603771628302-c32c88e568e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTUxNg&ixlib=rb-1.2.1&q=80&w=800',
@@ -140,16 +132,7 @@ onMounted(() => {
     gsap.set([sections[currentIndex], images[index]], { zIndex: 1, autoAlpha: 1 })
     gsap.set([sections[index], images[currentIndex]], { zIndex: 2, autoAlpha: 1 })
 
-    tl.set(count, { text: '' }, 0.32)
-      .to(
-        count,
-        {
-          text: slides.value[index].displayText,
-          duration: 0.8,
-          ease: 'none',
-        },
-        0.32,
-      )
+    tl.set(count, { text: index + 1 }, 0.32)
       .fromTo(
         outerWrappers[index],
         {
@@ -342,7 +325,7 @@ onUnmounted(() => {
     grid-template-rows: repeat(10, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
-    // padding: 1rem;
+    padding: 1rem;
 
     border: 5px solid red;
 
@@ -379,28 +362,32 @@ onUnmounted(() => {
     overflow: hidden;
   }
 
-  &__img-wrapper {
+  &__img-cont {
     margin-top: 4rem;
     grid-area: 2 / 1 / 7 / 8;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    align-content: flex-start;
-    height: 100%;
-    overflow: hidden;
-  }
 
-  &__img {
-    width: calc(50% - 0.25rem);
-    height: calc(50% - 0.25rem);
-    object-fit: cover;
-    border-radius: 4px;
-    flex-shrink: 0;
-
-    // 當只有一張圖時，佔滿整個 wrapper
-    &:only-child {
-      width: 100%;
+    img {
+      flex: 1;
+      min-width: 0;
       height: 100%;
+      object-fit: cover;
+
+      // 如果有多張圖片，調整寬度
+      &:nth-child(1):nth-last-child(1) {
+        width: 100%;
+      } // 只有1張圖
+      &:nth-child(1):nth-last-child(2),
+      &:nth-child(2):nth-last-child(1) {
+        width: calc(50% - 0.25rem);
+      } // 有2張圖
+      &:nth-child(1):nth-last-child(3),
+      &:nth-child(2):nth-last-child(2),
+      &:nth-child(3):nth-last-child(1) {
+        width: calc(33.333% - 0.33rem);
+      } // 有3張圖
     }
   }
 }
@@ -410,20 +397,18 @@ onUnmounted(() => {
   // top: 0;
   // bottom: 0;
   top: var(--q-header-height); /* 避開 q-header */
-  height: calc(100% - var(--q-header-height) - var(--q-footer-height)); /* 計算實際可用高度 */
+  bottom: var(--q-footer-height); /* 避開 q-footer */
   left: 0;
   right: 0;
   z-index: 2;
 
   &__content {
     // max-width: 1400px;
-    width: 100%;
-    height: 100%;
-    // margin: 0 auto;
+    width: 100vw;
+    margin: 0 auto;
     padding: 0 1rem;
-    // height: 90vh;
-    // margin-bottom: 10vh;
-
+    height: 90vh;
+    margin-bottom: 10vh;
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
@@ -450,28 +435,31 @@ onUnmounted(() => {
 
   &__count {
     grid-area: 3 / 10 / 4 / 10;
-    font-size: clamp(1.5rem, 3vw, 3rem);
+    font-size: clamp(3rem, 4vw, 15rem);
     margin: 0;
     padding: 0;
     text-align: right;
-    font-weight: bold;
-    letter-spacing: 0.1em;
-    min-height: 2em; /* 避免文字切換時高度跳動 */
+    border-bottom: 7px white solid;
   }
 }
 
 @media screen and (min-width: 900px) {
+  .overlay__content,
+  .slide__container {
+    padding: 2rem;
+  }
+
   .overlay__img-cont {
-    grid-area: 5 / 6 / 10 / 11;
+    grid-area: 6 / 5 / 11 / 11;
   }
 
   .overlay__count {
-    grid-area: 4 / 7 / 5 / 11;
+    grid-area: 4 / 9 / 5 / 10;
   }
 
-  .slide__img-wrapper {
+  .slide__img-cont {
     margin-top: 0;
-    grid-area: 3 / 2 / 9 / 6;
+    grid-area: 3 / 2 / 8 / 6;
   }
 
   .slide__heading {
