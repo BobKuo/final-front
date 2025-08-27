@@ -23,7 +23,7 @@
 
     <section class="overlay">
       <div class="overlay__content">
-        <p class="overlay__count"><span class="count"></span></p>
+        <p class="overlay__count"><span class="count">1</span></p>
         <figure class="overlay__img-cont">
           <img
             v-for="(slide, index) in slides"
@@ -50,7 +50,7 @@ gsap.registerPlugin(TextPlugin)
 // 定義幻燈片資料
 const slides = ref([
   {
-    title: 'ANIMAL-TEA',
+    title: ' 動物喝茶系列',
     displayText: '1 動物茶',
     images: [
       'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
@@ -115,6 +115,7 @@ onMounted(() => {
   gsap.set(innerWrappers, { xPercent: -100 })
   gsap.set('.slide:nth-of-type(1) .slide__outer', { xPercent: 0 })
   gsap.set('.slide:nth-of-type(1) .slide__inner', { xPercent: 0 })
+  gsap.set(count, { text: `${slides.value[currentIndex].displayText}` })
 
   function gotoSection(index, direction) {
     animating = true
@@ -145,7 +146,7 @@ onMounted(() => {
         count,
         {
           text: slides.value[index].displayText,
-          duration: 0.8,
+          duration: 0.32,
           ease: 'none',
         },
         0.32,
@@ -169,20 +170,20 @@ onMounted(() => {
       .to(
         heading,
         {
-          '--width': 800,
-          xPercent: 30 * direction,
+          // '--width': 800,
+          // xPercent: 30 * direction,
         },
         0,
       )
       .fromTo(
         nextHeading,
         {
-          '--width': 800,
-          xPercent: -30 * direction,
+          // '--width': 800,
+          // xPercent: -30 * direction,
         },
         {
-          '--width': 200,
-          xPercent: 0,
+          // '--width': 200,
+          // xPercent: 0,
         },
         0,
       )
@@ -306,7 +307,7 @@ onUnmounted(() => {
 }
 
 .slide {
-  height: 100%;
+  height: calc(100vh - 100px);
   width: 100%;
   // top: 0;
   position: fixed;
@@ -338,8 +339,8 @@ onUnmounted(() => {
     height: 100%;
     margin: 0;
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(10, 1fr);
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(20, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
     // padding: 1rem;
@@ -377,6 +378,8 @@ onUnmounted(() => {
     align-self: center;
     line-height: 0.9;
     overflow: hidden;
+
+    border: 5px solid purple;
   }
 
   &__img-wrapper {
@@ -388,6 +391,8 @@ onUnmounted(() => {
     align-content: flex-start;
     height: 100%;
     overflow: hidden;
+
+    border: 5px solid hotpink;
   }
 
   &__img {
@@ -409,8 +414,8 @@ onUnmounted(() => {
   position: fixed;
   // top: 0;
   // bottom: 0;
-  top: var(--q-header-height); /* 避開 q-header */
-  height: calc(100% - var(--q-header-height) - var(--q-footer-height)); /* 計算實際可用高度 */
+  // top: var(--q-header-height); /* 避開 q-header */
+  height: calc(100vh - 100px); /* 計算實際可用高度 */
   left: 0;
   right: 0;
   z-index: 2;
@@ -420,24 +425,40 @@ onUnmounted(() => {
     width: 100%;
     height: 100%;
     // margin: 0 auto;
-    padding: 0 1rem;
+    // padding: 0 1rem;
     // height: 90vh;
     // margin-bottom: 10vh;
 
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(10, 1fr);
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(20, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
 
     border: 5px solid yellow;
+
+    // 顯示格線（開發用）
+    position: relative; // 確保 ::after 定位正確
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1000;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+      background-size: calc(100% / 20) calc(100% / 20);
+    }
   }
 
   &__img-cont {
     position: relative;
     overflow: hidden;
     margin: 0;
-    grid-area: 4 / 3 / 9 / 11;
+    grid-area: 1 / 1 / 21 / 21;
+    border: 5px solid green;
 
     img {
       position: absolute;
@@ -449,33 +470,36 @@ onUnmounted(() => {
   }
 
   &__count {
-    grid-area: 3 / 10 / 4 / 10;
-    font-size: clamp(1.5rem, 3vw, 3rem);
+    grid-area: 6 / 20 / 8 / 20;
+    // font-size: clamp(1.5rem, 3vw, 3rem);
+    font-size: 3rem;
     margin: 0;
     padding: 0;
     text-align: right;
     font-weight: bold;
     letter-spacing: 0.1em;
     min-height: 2em; /* 避免文字切換時高度跳動 */
+
+    border: 5px solid cyan;
   }
 }
 
 @media screen and (min-width: 900px) {
   .overlay__img-cont {
-    grid-area: 5 / 6 / 10 / 11;
+    grid-area: 10 / 10 / 20 / 20;
   }
 
   .overlay__count {
-    grid-area: 4 / 7 / 5 / 11;
+    grid-area: 8 / 14 / 10 / 20;
   }
 
   .slide__img-wrapper {
     margin-top: 0;
-    grid-area: 3 / 2 / 9 / 6;
+    grid-area: 5 / 2 / 19 / 11;
   }
 
   .slide__heading {
-    grid-area: 1 / 2 / 4 / 11;
+    grid-area: 1 / 3 / 8 / 21;
   }
 }
 </style>
