@@ -1,97 +1,139 @@
 <template>
-  <q-page class="work-showcase">
-    <!-- 固定的字母動畫元素 -->
-    <div ref="letterElement" class="floating-letter">J</div>
-
-    <!-- 主要內容區域 -->
-    <section ref="pinSection" class="pin-section">
-      <!-- 橫向滑動軌道 -->
-      <div ref="track" class="horizontal-track">
-        <div
-          v-for="(series, seriesIdx) in workSeries"
-          :key="series.id"
-          class="series-panel"
-          :data-series="seriesIdx"
-        ></div>
+  <q-page>
+    <div id="index" class="flex flex-center text-h1">start</div>
+    <div id="container">
+      <div
+        v-for="(series, index) in workSeries"
+        :key="index"
+        :style="{ backgroundColor: series.color }"
+        class="slide flex flex-center text-h1"
+      >
+        {{ series.title }}
       </div>
-    </section>
+    </div>
+    <div id="index" class="flex flex-center text-h1">end</div>
   </q-page>
 </template>
+
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { onMounted, ref } from 'vue'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-// Refs
-const pinSection = ref(null)
-const letterElement = ref(null)
+gsap.registerPlugin(ScrollTrigger)
+gsap.defaults({ ease: 'none' })
 
-let ctx = null
+// 定義 slides 資料
+// 作品系列資料
+const workSeries = ref([
+  {
+    id: 1,
+    title: '動物喝茶系列',
+    description: '探索潛意識的色彩與形狀',
+    year: '2023',
+    count: 8,
+    color: '#FF6B6B',
+    works: [
+      {
+        id: 1,
+        title: '午夜夢迴',
+        image:
+          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755832805/works/samezymj56l3pff5mehj.jpg',
+        medium: '水彩',
+      },
+      {
+        id: 2,
+        title: '藍色憂鬱',
+        image:
+          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755832874/works/k5u71ssa2am42dx5cavx.jpg',
+        medium: '油畫',
+      },
+      {
+        id: 3,
+        title: '金色幻想',
+        image:
+          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755833079/works/pvoeot36vhpdpj7csdc2.jpg',
+        medium: '數位繪畫',
+      },
+      {
+        id: 4,
+        title: '紫色迷霧',
+        image:
+          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755833132/works/qyyhcxlmzxwdhp9ymvfv.jpg',
+        medium: '壓克力',
+      },
+    ],
+  },
+  {
+    id: 2,
+    title: '都市印象',
+    description: '現代城市的光影與節奏',
+    year: '2022',
+    count: 6,
+    color: '#4ECDC4',
+    works: [
+      { id: 5, title: '霓虹夜景', image: '/images/city1.jpg', medium: '數位繪畫' },
+      { id: 6, title: '地鐵風景', image: '/images/city2.jpg', medium: '速寫' },
+      { id: 7, title: '摩天大樓', image: '/images/city3.jpg', medium: '水彩' },
+      { id: 8, title: '街頭塗鴉', image: '/images/city4.jpg', medium: '噴漆' },
+    ],
+  },
+  {
+    id: 3,
+    title: '自然詩篇',
+    description: '大自然的原始美感',
+    year: '2021',
+    count: 10,
+    color: '#95E1D3',
+    works: [
+      { id: 9, title: '森林秘境', image: '/images/nature1.jpg', medium: '油畫' },
+      { id: 10, title: '海浪之歌', image: '/images/nature2.jpg', medium: '水彩' },
+      { id: 11, title: '山嵐飄渺', image: '/images/nature3.jpg', medium: '國畫' },
+      { id: 12, title: '花語綻放', image: '/images/nature4.jpg', medium: '壓克力' },
+    ],
+  },
+])
 
-onMounted(async () => {
-  await nextTick()
-  initAnimations()
-})
+onMounted(() => {
+  let sections = gsap.utils.toArray('.slide')
 
-onUnmounted(() => {
-  if (ctx) ctx.revert()
-})
-
-// 初始化動畫
-const initAnimations = () => {
-  const section = pinSection.value
-  const letter = letterElement.value
-
-  // 計算總滑動距離
-  const panels = gsap.utils.toArray('.series-panel')
-  const totalWidth = panels.reduce((acc, panel) => acc + panel.offsetWidth, 0)
-  const scrollDistance = totalWidth - window.innerWidth
-
-  // 設定初始狀態
-  gsap.set(letter, { scale: 1, rotation: 0 })
-
-  // 字母動畫（沿底部移動並旋轉）
-  gsap.to(letterElement, {
-    x: () => window.innerWidth - 150,
-    rotation: 360,
-    scale: 1.5,
-    ease: 'none',
+  gsap.to(sections, {
+    xPercent: -100 * (sections.length - 1),
     scrollTrigger: {
-      trigger: section,
-      start: 'top top',
-      end: () => `+=${scrollDistance}`,
+      trigger: '#container',
+      start: 'top top+=50',
+      end: `+=${workSeries.value.length * 1000}`, // 根據 slide 數量動態調整
       scrub: 1,
+      snap: (value) => {
+        const total = sections.length - 1
+        const slide = Math.round(value * total)
+        return slide / total
+      },
+      pin: true,
       markers: true,
     },
   })
-}
-//
+})
 </script>
+
 <style scoped>
-.work-showcase {
-  /* background: #1a1a1a; */
-  /* color: white; */
-  background-color: cadetblue;
-  color: green;
-}
-.floating-letter {
-  position: fixed;
-  bottom: 40px;
-  left: 40px;
-
-  font-size: 120px;
-  font-weight: bold;
-  /* color: rgba(255, 255, 255, 0.1); */
-  z-index: 10;
-
-  font-family: 'Arial Black', sans-serif;
-  pointer-events: none;
+#index {
+  height: calc(100vh - 100px);
+  width: 100vw;
+  border: 5px solid red;
 }
 
-/* section */
-.pin-section {
-  height: calc(100vh - var(--app-header-height) - var(--app-footer-height));
-  position: relative;
+#container {
+  /* height: calc(100vh - 50px);
+  width: 100vw; */
 
-  background-color: pink;
+  display: flex;
+  flex-direction: row;
+  overflow-x: hidden;
+}
+
+.slide {
+  flex: 0 0 100%;
+  height: calc(100vh - 50px);
 }
 </style>
