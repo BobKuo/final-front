@@ -16,4 +16,7 @@ export default {
   update(id, data) {
     return apiService.apiAuth.patch(`/work/${id}`, data)
   },
+  getList(id) {
+    return apiService.api.get('/work/list/' + id)
+  }
 }

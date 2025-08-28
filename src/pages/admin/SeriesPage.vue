@@ -8,6 +8,7 @@
         row-key="id"
         class="q-table--dense"
         v-model:pagination="pagination"
+        style="width: 80vw"
       >
         <template #top>
           <q-toolbar>
@@ -21,14 +22,15 @@
           </q-toolbar>
         </template>
         <template #body-cell-cover="props">
-          <q-td :props="props">
-            <div style="display: flex; align-items: center; gap: 8px">
-              <!-- 顯示第一張圖片 -->
+          <q-td :props="props" style="width: 30%">
+            <div v-if="props.row.cover" style="display: flex; align-items: center; gap: 8px">
+              <!-- 顯示系列封面 -->
               <q-img
                 :src="props.row.cover"
-                style="width: 100px; height: 100px"
+                style="width: 100%; height: 100%"
                 class="q-ma-sm"
                 :alt="props.row.name"
+                fit="contain"
               />
             </div>
           </q-td>
@@ -55,14 +57,18 @@
         </template>
         <template #body-cell-description="props">
           <q-td :props="props">
-            <div style="width: 200px; height: 100px; overflow-y: auto; white-space: pre-line">
-              {{ props.row.description }}
-            </div>
+            <template v-if="props.row.description">
+              <div style="width: 200px; height: 100px; overflow-y: auto; white-space: pre-line">
+                {{ props.row.description }}
+              </div>
+            </template>
           </q-td>
         </template>
         <template #body-cell-post="props">
           <q-td :props="props">
-            <q-icon v-if="props.row.post" name="check" size="md" color="green" />
+            <template v-if="props.row.post">
+              <q-icon name="check" size="md" color="green" />
+            </template>
           </q-td>
         </template>
         <template #body-cell-action="props">

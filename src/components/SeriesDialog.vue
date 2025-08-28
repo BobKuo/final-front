@@ -21,7 +21,7 @@
           <q-btn
             outline
             color="primary"
-            label="選擇作品"
+            label="選擇代表作品"
             @click="openWorkList"
             :disable="isSubmitting"
           />
@@ -50,8 +50,9 @@
           >
           </q-input>
           <!-- 顯示封面圖片 -->
+          <div class="text-overline text-grey-7">系列封面</div>
           <template v-if="existedCover">
-            <div class="image-container" style="position: relative; width: 20%">
+            <div class="image-container" style="position: relative; width: 100%">
               <q-img :src="existedCover" style="width: 100%" :alt="existedCover" />
               <q-btn
                 round
@@ -76,14 +77,14 @@
             max-size="5MB"
           />
           <q-toggle
-            :label="post.value.value ? '上首頁' : '不上首頁'"
+            :label="post.value.value ? '已上首頁' : '上首頁'"
             v-model="post.value.value"
             :disable="isSubmitting"
             :error="!!post.errorMessage.value"
             :error-message="post.errorMessage.value"
           />
           <q-card-actions align="right">
-            <q-btn color="secondary" @click="closeList(false)">取消</q-btn>
+            <q-btn color="secondary" @click="closeDialog(false)">取消</q-btn>
             <q-btn type="submit" :loading="isSubmitting" color="primary">{{
               props.series ? '更新' : '新增'
             }}</q-btn>
@@ -91,7 +92,12 @@
         </q-card-section>
       </q-form>
     </q-card>
-    <!-- <work-list v-model="isShowList" @close="handleListClose" /> -->
+    <worklist-dialog
+      v-model="isShowDialog"
+      :works="selectedWorks"
+      :series-id="props.series._id"
+      @close="handleDialogClose"
+    />
   </q-dialog>
 </template>
 <script setup>
@@ -100,6 +106,7 @@ import { useQuasar } from 'quasar'
 import { useField, useForm } from 'vee-validate'
 import * as yup from 'yup'
 import seriesService from 'src/services/series'
+import worklistDialog from './WorklistDialog.vue'
 
 const FOLDERNAME = 'series'
 
@@ -129,8 +136,7 @@ const { handleSubmit, resetForm, isSubmitting } = useForm({
 const name = useField('name')
 const description = useField('description')
 const post = useField('post')
-
-const works = ref([]) // 陣列存放作品的object id
+const selectedWorks = ref([])
 
 const fileRecords = ref([])
 const rawFileRecords = ref([])
@@ -138,23 +144,14 @@ const rawFileRecords = ref([])
 const existedCover = ref('')
 const deletedCover = ref('')
 
-const allWorks = ref([]) // 所有作品列表
-const workOptions = ref([]) // 從 API 獲取的作品列表
-const selectedWorks = ref([]) // 已選中的作品
-
 watch(model, (newValue) => {
-  console.log('model變化', newValue)
   // 新增作品
   if (newValue && !props.work) {
     // 清空form表單以外的資料
-    works.value = []
+    selectedWorks.value = []
 
     existedCover.value = ''
     deletedCover.value = ''
-
-    // 新增作品時 執行 fetchTags
-    // 編輯作品時 留到props.work的監聽去執行fetchTags
-    fetchTags()
   }
 })
 
@@ -166,6 +163,7 @@ watch(
       name.value.value = editSeries.name
       description.value.value = editSeries.description
       post.value.value = editSeries.post
+      selectedWorks.value = editSeries.works
 
       // 使用展開運算符複製圖片陣列
       // 這樣可以避免直接修改原始陣列
@@ -173,8 +171,6 @@ watch(
 
       // 清空刪除的圖片
       deletedCover.value = ''
-
-      fetchTags()
     }
   },
 )
@@ -190,7 +186,7 @@ const submit = handleSubmit(async (values) => {
   }
 
   // 圖片數量限制
-  if (existedCover.value) {
+  if (existedCover.value && fileRecords.value.length > 0) {
     $q.dialog({
       title: '錯誤',
       message: `請先刪除原來的封面圖片，才能上傳新圖片`,
@@ -254,57 +250,18 @@ const selectDeletedImage = () => {
   existedCover.value = ''
 }
 
-// 獲取標籤列表
-const fetchTags = async () => {
-  // // 清空已選擇的標籤
-  // selectedTags.value = []
-  // tagOptions.value = []
-  // allTags.value = []
-  // try {
-  //   const { data } = await tagService.getAll()
-  //   allTags.value = data.tags
-  //   console.log('獲取標籤列表')
-  //   // 設定標籤選項
-  //   tagOptions.value = data.tags.map((tag) => ({
-  //     value: tag._id,
-  //     label: tag.name,
-  //     enable: tag.enable,
-  //     color: tag.enable ? 'primary' : 'grey',
-  //   }))
-  //   // tagOptions.value = [
-  //   //   { label: '科技', value: '科技' },
-  //   //   { label: '藝術', value: '藝術' },
-  //   //   { label: '設計', value: '設計' },
-  //   //   { label: '教育', value: '教育' },
-  //   //   { label: '其他', value: '其他' },
-  //   // ]
-  //   // 先刪除tags中 不在tagOptions裡的標籤
-  //   // 再將結果設定給selectedTags
-  //   // 例如：假設有以下情況
-  //   // tags:[{name:'運動', id:'aaa'}, {name:'日本', id:'bbb'}]
-  //   // tagOptions:[{ label: '南韓', value: 'bbb' }, { label: '生活', value: 'ccc' }]  (運動已被停用)
-  //   // selectedTags.value = ['bbb']（只留下有對應的 id）
-  //   //
-  //   selectedTags.value = tagOptions.value
-  //     .filter((option) => tags.value.some((tag) => tag._id === option.value))
-  //     .map((option) => option.value)
-  // } catch (error) {
-  //   console.error('獲取標籤失敗', error)
-  // }
-}
-
 // 打開標籤管理對話框
-const isShowList = ref(false)
+const isShowDialog = ref(false)
 
 const openWorkList = () => {
-  isShowList.value = true
+  isShowDialog.value = true
 }
 
-const handleListClose = () => {
-  isShowList.value = false
+const handleDialogClose = (returnedWorks) => {
+  isShowDialog.value = false
 
-  console.log('重新獲取標籤列表')
-  fetchTags() // 重新獲取標籤列表
+  // 更新已選中的作品
+  selectedWorks.value = returnedWorks
 }
 </script>
 
