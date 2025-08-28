@@ -7,7 +7,7 @@
         :columns="columns"
         row-key="id"
         class="q-table--dense"
-        :pagination="{ rowsPerPage: 5 }"
+        v-model:pagination="pagination"
       >
         <template #top>
           <q-toolbar>
@@ -24,7 +24,7 @@
               outlined
               clearable
               placeholder="搜尋分類"
-              :options="categoryOptions"
+              :options="seriesOptions"
               emit-value
               map-options
             >
@@ -101,13 +101,20 @@
         </template>
       </q-table>
     </div>
-    <work-dialog v-model="isShowDialog" :work="dialogWork" @close="handleDialogClose" />
+    <work-dialog
+      v-model="isShowDialog"
+      :work="dialogWork"
+      :series-options="seriesOptions"
+      @close="handleDialogClose"
+    />
   </q-page>
 </template>
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import workService from 'src/services/work'
+import seriesService from 'src/services/series'
+
 import workDialog from 'src/components/WorkDialog.vue'
 
 const works = ref([])
@@ -115,24 +122,54 @@ const searchName = ref('')
 const searchCategory = ref(null)
 
 // 從 works 中提取所有分類，並去重複
-const categoryOptions = computed(() => {
-  const categories = [...new Set(works.value.map((work) => work.category))]
-  // 將分類轉換為 Quasar 下拉選單需要的格式
-  return categories.map((category) => ({
-    label: category, // 顯示的名稱
-    value: category, // 對應的值
-  }))
-})
+// const categoryOptions = computed(() => {
+//   const categories = [...new Set(works.value.map((work) => work.category))]
+//   // 將分類轉換為 Quasar 下拉選單需要的格式
+//   return categories.map((category) => ({
+//     label: category, // 顯示的名稱
+//     value: category, // 對應的值
+//   }))
+// })
+
+// 先取得所有系列名稱，作為分類選項
+const seriesOptions = ref([])
+const fetchSeries = async () => {
+  try {
+    const { data } = await seriesService.getAll()
+    seriesOptions.value = data.series.map((series) => {
+      return {
+        label: series.name,
+        value: series._id,
+      }
+    })
+
+    console.log('獲取作品系列列表', seriesOptions.value) // 確認是否正確獲取
+  } catch (error) {
+    console.error('獲取作品系列列表失敗', error)
+  }
+}
+fetchSeries()
+
 // 搜尋功能
 const filteredWorks = computed(() => {
   return works.value.filter((work) => {
     const nameMatch =
       !searchName.value || work.name.toLowerCase().includes(searchName.value.toLowerCase())
-    const categoryMatch =
-      !searchCategory.value ||
-      work.category.toLowerCase().includes(searchCategory.value.toLowerCase())
+    const categoryMatch = !searchCategory.value || work.category._id === searchCategory.value
+
     return nameMatch && categoryMatch
   })
+})
+
+// 加入分頁控制
+const pagination = ref({
+  page: 1,
+  rowsPerPage: 5,
+})
+
+// 監聽搜尋條件變化，重置到第一頁
+watch([searchName, searchCategory], () => {
+  pagination.value.page = 1
 })
 
 const $q = useQuasar()
@@ -146,7 +183,7 @@ const columns = [
   { name: 'post', label: '發佈', field: 'post' },
   { name: 'name', label: '名稱', field: 'name', align: 'left', sortable: true },
   { name: 'images', label: '圖片', field: 'images', align: 'center', sortable: false },
-  { name: 'category', label: '分類', field: 'category' },
+  { name: 'category', label: '分類', field: (item) => item.category.name },
   { name: 'tags', label: '標籤', field: (item) => item.tags.join(', '), align: 'left' },
   { name: 'content', label: '內容', field: 'content' },
   { name: 'statistics', label: '統計', field: 'statistics' },

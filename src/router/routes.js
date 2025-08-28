@@ -49,6 +49,11 @@ const routes = [
         meta: { title: '作品管理' },
       },
       {
+        path: 'series',
+        component: () => import('pages/admin/SeriesPage.vue'),
+        meta: { title: '系列管理' },
+      },
+      {
         path: 'products',
         component: () => import('pages/admin/ProductsPage.vue'),
         meta: { title: '商品管理' },

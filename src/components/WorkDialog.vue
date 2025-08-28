@@ -19,7 +19,11 @@
             label="分類"
             v-model="category.value.value"
             :disable="isSubmitting"
-            :options="categoryOptions"
+            :options="props.seriesOptions"
+            option-value="value"
+            option-label="label"
+            emit-value
+            map-options
             :error="!!category.errorMessage.value"
             :error-message="category.errorMessage.value"
           />
@@ -128,6 +132,7 @@ const model = defineModel()
 
 const props = defineProps({
   work: Object,
+  seriesOptions: Array,
 })
 
 const emit = defineEmits(['close'])
@@ -135,22 +140,28 @@ const emit = defineEmits(['close'])
 const $q = useQuasar()
 const fileAgent = useTemplateRef('fileAgent')
 
-const categoryOptions = [
-  '普迪系列',
-  '幾何動物',
-  '字母系列',
-  '白日夢系列',
-  '動物喝茶',
-  '注音系列',
-  '365日常',
-  '生活雜記',
-  '其他',
-]
+// const categoryOptions = [
+//   '普迪系列',
+//   '幾何動物',
+//   '字母系列',
+//   '白日夢系列',
+//   '動物喝茶',
+//   '注音系列',
+//   '365日常',
+//   '生活雜記',
+//   '其他',
+// ]
 
 const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: yup.object({
     name: yup.string().required('作品標題是必填的').max(100, '作品標題最多只能有 100 個字元'),
-    category: yup.string().required('分類是必填的').oneOf(categoryOptions, '請選擇有效的分類'),
+    category: yup
+      .string()
+      .required('分類是必填的')
+      .test('is-valid-category', '請選擇有效的分類', function (value) {
+        // 使用 test 方法來動態檢查 seriesOptions
+        return props.seriesOptions.some((option) => option.value === value)
+      }),
     content: yup.string().max(500, '內容最多只能有 500 個字元'),
     post: yup.boolean().required('是否張貼是必填的'),
   }),
@@ -207,7 +218,7 @@ watch(
     // 如果有傳入 work，則填入表單資料
     if (editWork) {
       name.value.value = editWork.name
-      category.value.value = editWork.category
+      category.value.value = editWork.category._id
       tags.value = editWork.tags
       content.value.value = editWork.content
       post.value.value = editWork.post
