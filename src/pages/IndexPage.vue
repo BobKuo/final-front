@@ -32,10 +32,11 @@
 
       <section class="overlay text-judy-7">
         <div class="overlay__content">
-          <p class="overlay__count"><span class="count">1</span></p>
           <figure class="overlay__img-cont">
             <img v-for="(slide, index) in slides" :key="index" class="image" :src="slide.cover" />
           </figure>
+          <p class="overlay__count overlay__count--line1"><span class="count-line1"></span></p>
+          <p class="overlay__count overlay__count--line2"><span class="count-line2"></span></p>
         </div>
       </section>
     </template>
@@ -156,7 +157,8 @@ const initializeGSAP = () => {
   const images = gsap.utils.toArray('.image') // 移除 .reverse()
   const outerWrappers = gsap.utils.toArray('.slide__outer')
   const innerWrappers = gsap.utils.toArray('.slide__inner')
-  const count = document.querySelector('.count')
+  const countLine1 = document.querySelector('.count-line1')
+  const countLine2 = document.querySelector('.count-line2')
   const wrap = gsap.utils.wrap(0, sections.length)
 
   gsap.set(outerWrappers, { xPercent: 100 })
@@ -170,9 +172,19 @@ const initializeGSAP = () => {
     gsap.set(images[0], { autoAlpha: 1 })
   }
 
+  // 分割 description 並設定到兩個區塊的函數
+  function setDescriptionText(description) {
+    const lines = (description || '').split(/\\r\\n|\r\n|\n/)
+    const line1 = lines[0] || ''
+    const line2 = lines[1] || ''
+
+    gsap.set(countLine1, { text: line1 })
+    gsap.set(countLine2, { text: line2 })
+  }
+
   // 確保 slides 資料存在
   if (slides.value.length > 0 && slides.value[currentIndex]) {
-    gsap.set(count, { text: `${slides.value[currentIndex].description || ''}` })
+    setDescriptionText(slides.value[currentIndex].description)
   }
 
   function gotoSection(index, direction) {
@@ -205,11 +217,25 @@ const initializeGSAP = () => {
     gsap.set([sections[currentIndex], images[currentIndex]], { zIndex: 1, autoAlpha: 1 })
     gsap.set([sections[index], images[index]], { zIndex: 2, autoAlpha: 1 })
 
-    tl.set(count, { text: '' }, 0.32)
+    // 清空兩行文字，然後設定新的內容
+    const lines = (slides.value[index].description || '').split(/\\r\\n|\r\n|\n/)
+    const line1 = lines[0] || ''
+    const line2 = lines[1] || ''
+
+    tl.set([countLine1, countLine2], { text: '' }, 0.32)
       .to(
-        count,
+        countLine1,
         {
-          text: slides.value[index].description || '', // 加入容錯處理
+          text: line1,
+          duration: 0.32,
+          ease: 'none',
+        },
+        0.32,
+      )
+      .to(
+        countLine2,
+        {
+          text: line2,
           duration: 0.32,
           ease: 'none',
         },
@@ -444,20 +470,20 @@ onUnmounted(() => {
     grid-row-gap: 0px;
     // padding: 1rem;
 
-    border: 5px solid red;
+    // border: 5px solid red;
 
     // 顯示 10x10 grid 格線（開發用）
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1000;
-      background-image:
-        linear-gradient(to right, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
-      background-size: 10% 10%;
-    }
+    // &::after {
+    //   content: '';
+    //   position: absolute;
+    //   inset: 0;
+    //   pointer-events: none;
+    //   z-index: 1000;
+    //   background-image:
+    //     linear-gradient(to right, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+    //     linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+    //   background-size: 10% 10%;
+    // }
   }
 
   &__heading {
@@ -478,7 +504,7 @@ onUnmounted(() => {
     line-height: 0.9;
     overflow: hidden;
 
-    border: 5px solid purple;
+    // border: 5px solid purple;
   }
 
   &__img-wrapper {
@@ -491,7 +517,7 @@ onUnmounted(() => {
     height: 100%;
     overflow: hidden;
 
-    border: 5px solid hotpink;
+    // border: 5px solid hotpink;
   }
 
   &__img {
@@ -534,22 +560,22 @@ onUnmounted(() => {
     grid-column-gap: 0px;
     grid-row-gap: 0px;
 
-    border: 5px solid yellow;
+    // border: 5px solid yellow;
 
     // 顯示格線（開發用）
     position: relative; // 確保 ::after 定位正確
 
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1000;
-      background-image:
-        linear-gradient(to right, rgba(255, 255, 255, 0.4) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
-      background-size: calc(100% / 20) calc(100% / 20);
-    }
+    // &::after {
+    //   content: '';
+    //   position: absolute;
+    //   inset: 0;
+    //   pointer-events: none;
+    //   z-index: 1000;
+    //   background-image:
+    //     linear-gradient(to right, rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+    //     linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+    //   background-size: calc(100% / 20) calc(100% / 20);
+    // }
   }
 
   &__img-cont {
@@ -557,7 +583,8 @@ onUnmounted(() => {
     overflow: hidden;
     margin: 0;
     grid-area: 1 / 1 / 21 / 21;
-    border: 5px solid green;
+    // border: 5px solid green;
+    z-index: 1; // 背景圖片層級
 
     img {
       position: absolute;
@@ -569,7 +596,6 @@ onUnmounted(() => {
   }
 
   &__count {
-    grid-area: 6 / 20 / 8 / 20;
     // font-size: clamp(1.5rem, 3vw, 3rem);
     font-size: 3rem;
     margin: 0;
@@ -577,24 +603,40 @@ onUnmounted(() => {
     text-align: right;
     font-weight: bold;
     letter-spacing: 0.1em;
-    min-height: 2em; /* 避免文字切換時高度跳動 */
+    min-height: 1em;
+    z-index: 10;
+    position: absolute;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    line-height: 1.2;
+    right: 20px;
 
-    border: 5px solid cyan;
+    // 第一行文字定位 - 在第二行上方
+    &--line1 {
+      top: calc(60% - 4rem); // 再下移 10%
+    }
+
+    // 第二行文字定位 - 在原本單行的位置
+    &--line2 {
+      top: 60%; // 再下移 10%
+    }
+
+    // border: 5px solid cyan;
   }
 }
 
 @media screen and (min-width: 900px) {
   .overlay__img-cont {
-    grid-area: 10 / 10 / 20 / 20;
+    grid-area: 9 / 10 / 20 / 20;
   }
 
   .overlay__count {
-    grid-area: 8 / 14 / 10 / 20;
+    grid-area: 8 / 12 / 10 / 20;
   }
 
   .slide__img-wrapper {
     margin-top: 0;
-    grid-area: 5 / 2 / 19 / 11;
+    grid-area: 6 / 2 / 20 / 11;
   }
 
   .slide__heading {
