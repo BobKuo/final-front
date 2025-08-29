@@ -1,1 +1,0 @@
-import{a$ as r}from"./index-D1ygRcZh.js";const o={create(t){return r.apiAuth.post("/work/add",t)},getAll(){return r.apiAuth.get("/work/all")},get(){return r.api.get("/work")},getId(t){return r.api.get("/work/"+t)},update(t,e){return r.apiAuth.patch(`/work/${t}`,e)},getList(t){return r.apiAuth.post("/work/list",{series_id:t})}};export{o as w};
