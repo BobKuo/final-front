@@ -6,9 +6,9 @@
         :rows="filteredSeries"
         :columns="columns"
         row-key="id"
-        class="q-table--dense"
+        class="q-table--dense q-mx-lg"
         v-model:pagination="pagination"
-        style="width: 80vw"
+        style="width: 95vw; height: 90vh"
       >
         <template #top>
           <q-toolbar>
@@ -21,8 +21,20 @@
             </q-input>
           </q-toolbar>
         </template>
+        <template #body-cell-action="props">
+          <q-td :props="props">
+            <q-btn flat icon="edit" @click="openDialog(props.row)" />
+          </q-td>
+        </template>
+        <template #body-cell-post="props">
+          <q-td :props="props">
+            <template v-if="props.row.post">
+              <q-icon name="check" size="xs" color="green" />
+            </template>
+          </q-td>
+        </template>
         <template #body-cell-cover="props">
-          <q-td :props="props" style="width: 30%">
+          <q-td :props="props">
             <div v-if="props.row.cover" style="display: flex; align-items: center; gap: 8px">
               <!-- 顯示系列封面 -->
               <q-img
@@ -37,20 +49,22 @@
         </template>
         <template #body-cell-works="props">
           <q-td :props="props">
-            <div v-if="props.row.works.length > 0" class="row q-gutter-xs" style="width: 150px">
+            <div v-if="props.row.works.length > 0" class="row q-gutter-sm wrap">
               <template v-for="work in props.row.works" :key="work._id">
-                <q-badge v-if="work.enable" color="primary" class="q-mr-xs">{{
-                  work.name
-                }}</q-badge>
-                <q-badge
-                  v-else
-                  color="grey"
-                  style="text-decoration: line-through"
-                  class="q-mr-xs"
-                  outline
-                >
-                  {{ work.name }}</q-badge
-                >
+                <div style="width: 45%">
+                  <q-img
+                    :src="work.images[0]"
+                    :alt="work.name"
+                    fit="contain"
+                    style="border: 1px solid gray"
+                  />
+                  <div
+                    class="text-overline text-center"
+                    style="overflow-y: auto; white-space: pre-line"
+                  >
+                    {{ work.name }}
+                  </div>
+                </div>
               </template>
             </div>
           </q-td>
@@ -58,22 +72,21 @@
         <template #body-cell-description="props">
           <q-td :props="props">
             <template v-if="props.row.description">
-              <div style="width: 200px; height: 100px; overflow-y: auto; white-space: pre-line">
+              <div style="overflow-y: auto; white-space: pre-line">
                 {{ props.row.description }}
               </div>
             </template>
           </q-td>
         </template>
-        <template #body-cell-post="props">
-          <q-td :props="props">
-            <template v-if="props.row.post">
-              <q-icon name="check" size="md" color="green" />
-            </template>
+        <template #body-cell-createdAt="props">
+          <q-td :props="props" style="white-space: normal">
+            {{ new Date(props.row.createdAt).toLocaleString() }}
           </q-td>
         </template>
-        <template #body-cell-action="props">
-          <q-td :props="props">
-            <q-btn flat icon="edit" @click="openDialog(props.row)" />
+
+        <template #body-cell-updatedAt="props">
+          <q-td :props="props" style="white-space: normal">
+            {{ new Date(props.row.updatedAt).toLocaleString() }}
           </q-td>
         </template>
       </q-table>
@@ -119,23 +132,45 @@ const $q = useQuasar()
 // ************************
 
 const columns = [
-  { name: 'action', label: '操作', field: 'action' },
-  { name: 'post', label: '上首頁', field: 'post' },
-  { name: 'name', label: '名稱', field: 'name', align: 'left', sortable: true },
-  { name: 'cover', label: '封面', field: 'cover', align: 'center', sortable: false },
-  { name: 'works', label: '代表作品', field: (item) => item.works.join(', '), align: 'left' },
-  { name: 'description', label: '描述', field: 'description' },
+  { name: 'action', label: '操作', field: 'action', align: 'center', style: 'width: 3%' },
+  { name: 'post', label: '上首頁', field: 'post', align: 'center', style: 'width: 2%' },
+  {
+    name: 'name',
+    label: '名稱',
+    field: 'name',
+    align: 'center',
+    sortable: true,
+    style: 'width: 5%',
+  },
+  {
+    name: 'cover',
+    label: '封面',
+    field: 'cover',
+    align: 'center',
+    sortable: false,
+    style: 'width: 40%',
+  },
+  {
+    name: 'works',
+    label: '代表作品',
+    field: (item) => item.works.join(', '),
+    align: 'left',
+    style: 'width: 20%',
+  },
+  { name: 'description', label: '描述', field: 'description', align: 'left', style: 'width: 20%' },
   {
     name: 'createdAt',
     label: '建立日期',
     field: (item) => new Date(item.createdAt).toLocaleString(),
     sortable: true,
+    style: 'width: 5%',
   },
   {
     name: 'updatedAt',
     label: '更新日期',
     field: (item) => new Date(item.updatedAt).toLocaleString(),
     sortable: true,
+    style: 'width: 5%',
   },
 ]
 
@@ -164,6 +199,7 @@ const openDialog = (series) => {
 }
 
 const handleDialogClose = (returnedSeries) => {
+  // 更新或新增系列後，更新列表
   if (returnedSeries) {
     const index = series.value.findIndex((s) => s._id === returnedSeries._id)
     if (index !== -1) {

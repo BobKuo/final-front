@@ -18,21 +18,26 @@
             counter
           ></q-input>
           <!-- 代表作品 -->
-          <q-btn
-            outline
-            color="primary"
-            label="選擇代表作品"
-            @click="openWorkList"
-            :disable="isSubmitting"
-          />
-          <q-list bordered separator v-if="selectedWorks.length > 0" class="q-pa-sm">
+          <div class="row items-center">
+            <div class="text-overline text-grey-7 q-mr-xs">代表作品</div>
+            <q-btn
+              v-if="props.series"
+              outline
+              color="grey"
+              icon="add"
+              dense
+              size="sm"
+              @click="openWorkList"
+              :disable="isSubmitting"
+            />
+          </div>
+          <q-list bordered separator v-if="selectedWorks.length > 0">
             <q-item v-for="work in selectedWorks" :key="work._id">
-              <q-item-section top thumbnail class="q-ml-none">
-                <img :src="work.images[0]" />
+              <q-item-section thumbnail class="q-mr-xs text-center">
+                <img :src="work.images[0]" style="object-fit: contain" />
               </q-item-section>
-
               <q-item-section>
-                <q-item-label>{{ work.title }}</q-item-label>
+                <q-item-label>{{ work.name }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -95,7 +100,7 @@
     <worklist-dialog
       v-model="isShowDialog"
       :works="selectedWorks"
-      :series-id="props.series._id"
+      :series-id="props.series?._id"
       @close="handleDialogClose"
     />
   </q-dialog>
@@ -200,7 +205,7 @@ const submit = handleSubmit(async (values) => {
     // fd.append(欄位名稱, 欄位值)
     const fd = new FormData()
     fd.append('name', values.name)
-    fd.append('works', JSON.stringify(selectedWorks.value)) // 傳送選中的作品
+    fd.append('works', JSON.stringify(selectedWorks.value.map((work) => work._id))) // 傳送選中的作品
     fd.append('description', values.description)
     fd.append('post', values.post)
     fd.append('folder', FOLDERNAME)
@@ -213,6 +218,8 @@ const submit = handleSubmit(async (values) => {
     const { data } = await (props.series
       ? seriesService.update(props.series._id, fd)
       : seriesService.create(fd))
+
+    console.log('=== createOrUpdateSeries ===', data)
 
     $q.notify({
       type: 'positive',
@@ -250,7 +257,7 @@ const selectDeletedImage = () => {
   existedCover.value = ''
 }
 
-// 打開標籤管理對話框
+// 打開系列管理對話框
 const isShowDialog = ref(false)
 
 const openWorkList = () => {
@@ -261,7 +268,9 @@ const handleDialogClose = (returnedWorks) => {
   isShowDialog.value = false
 
   // 更新已選中的作品
-  selectedWorks.value = returnedWorks
+  if (returnedWorks) {
+    selectedWorks.value = returnedWorks
+  }
 }
 </script>
 

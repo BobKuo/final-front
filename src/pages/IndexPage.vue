@@ -1,111 +1,159 @@
 <template>
   <div class="index-page">
-    <section v-for="(slide, index) in slides" :key="index" class="slide">
-      <div class="slide__outer">
-        <div class="slide__inner">
-          <div class="slide__content" :style="{ backgroundColor: slide.backgroundColor }">
-            <div class="slide__container">
-              <h2 class="slide__heading" v-html="slide.title"></h2>
-              <div class="slide__img-wrapper">
-                <img
-                  v-for="(imageUrl, imgIndex) in slide.images"
-                  :key="imgIndex"
-                  class="slide__img"
-                  :src="imageUrl"
-                  :alt="`${slide.title} - Image ${imgIndex + 1}`"
-                />
+    <!-- 載入狀態 -->
+    <div v-if="slides.length === 0" class="loading">
+      <q-spinner size="50px" color="white" />
+      <p>載入中...</p>
+    </div>
+
+    <!-- 主要內容，只在有資料時顯示 -->
+    <template v-else>
+      <section v-for="(slide, index) in slides" :key="index" class="slide">
+        <div class="slide__outer">
+          <div class="slide__inner">
+            <div class="slide__content" :class="`bg-judy-${(index % 5) + 1}`">
+              <div class="slide__container">
+                <h2 class="slide__heading" v-html="slide.name"></h2>
+                <div class="slide__img-wrapper">
+                  <!-- <p>{{ work.images[0] }}</p> -->
+                  <img
+                    v-for="(work, workIndex) in slide.works"
+                    :key="workIndex"
+                    class="slide__img"
+                    :src="work.images[0]"
+                    :alt="`${slide.name} - ${workIndex + 1}`"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="overlay">
-      <div class="overlay__content">
-        <p class="overlay__count"><span class="count">1</span></p>
-        <figure class="overlay__img-cont">
-          <img
-            v-for="(slide, index) in slides"
-            :key="index"
-            class="image"
-            :src="slide.overlayImage"
-          />
-        </figure>
-      </div>
-    </section>
+      <section class="overlay text-judy-7">
+        <div class="overlay__content">
+          <p class="overlay__count"><span class="count">1</span></p>
+          <figure class="overlay__img-cont">
+            <img v-for="(slide, index) in slides" :key="index" class="image" :src="slide.cover" />
+          </figure>
+        </div>
+      </section>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import { Observer } from 'gsap/Observer'
 import { TextPlugin } from 'gsap/TextPlugin'
+import seriesService from 'src/services/series'
 
 // 註冊 GSAP 插件
 gsap.registerPlugin(Observer)
 gsap.registerPlugin(TextPlugin)
 
 // 定義幻燈片資料
-const slides = ref([
-  {
-    title: ' 動物喝茶系列',
-    displayText: '1 動物茶',
-    images: [
-      'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
-    ],
-    overlayImage:
-      'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTU4Mw&ixlib=rb-1.2.1&q=80&w=800',
-    backgroundColor: '#6d597a',
-  },
-  {
-    title: 'ALPHABET',
-    displayText: '2字母',
-    images: [
-      'https://images.unsplash.com/photo-1558603668-6570496b66f8?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=85&w=400',
-      'https://images.unsplash.com/photo-1456324504439-367cee3b3c32?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=85&w=400',
-    ],
-    overlayImage:
-      'https://images.unsplash.com/photo-1594666757003-3ee20de41568?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTcwOA&ixlib=rb-1.2.1&q=80&w=800',
-    backgroundColor: '#355070',
-  },
-  {
-    title: 'GEOMETRY-ANIMAL',
-    displayText: '3幾何動物',
-    images: [
-      'https://images.unsplash.com/photo-1537165924986-cc3568f5d454?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=85&w=400',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
-      'https://images.unsplash.com/photo-1544787219-7f47ccb76574?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
-    ],
-    overlayImage:
-      'https://images.unsplash.com/photo-1579830341096-05f2f31b8259?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTQ5Ng&ixlib=rb-1.2.1&q=80&w=800',
-    backgroundColor: '#b56576',
-  },
-  {
-    title: 'PUTTY',
-    displayText: '4油灰',
-    images: [
-      'https://images.unsplash.com/photo-1589271243958-d61e12b61b97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=80&w=400',
-      'https://images.unsplash.com/photo-1493612276216-ee3925520721?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=80&w=400',
-      'https://images.unsplash.com/photo-1537165924986-cc3568f5d454?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=85&w=400',
-      'https://images.unsplash.com/photo-1544787219-7f47ccb76574?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
-    ],
-    overlayImage:
-      'https://images.unsplash.com/photo-1603771628302-c32c88e568e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTUxNg&ixlib=rb-1.2.1&q=80&w=800',
-    backgroundColor: '#9a8c98',
-  },
-])
+const slides = ref([])
 
 let observer = null
 let animating = false
 let currentIndex = 0
 
-onMounted(() => {
+// const slides = ref([
+//   {
+//     name: ' 動物喝茶系列',
+//     description: '1 動物茶',
+//     works: [
+//       {
+//         images: [
+//           'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
+//         ],
+//       },
+//     ],
+//     cover:
+//       'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTU4Mw&ixlib=rb-1.2.1&q=80&w=800',
+//     backgroundColor: '#6d597a',
+//   },
+//   {
+//     name: 'ALPHABET',
+//     description: '2字母',
+//     works: [
+//       {
+//         images: [
+//           'https://images.unsplash.com/photo-1558603668-6570496b66f8?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=85&w=400',
+//         ],
+//       },
+//       {
+//         images: [
+//           'https://images.unsplash.com/photo-1456324504439-367cee3b3c32?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=85&w=400',
+//         ],
+//       },
+//     ],
+//     cover:
+//       'https://images.unsplash.com/photo-1594666757003-3ee20de41568?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTcwOA&ixlib=rb-1.2.1&q=80&w=800',
+//     backgroundColor: '#355070',
+//   },
+//   {
+//     name: 'GEOMETRY-ANIMAL',
+//     description: '3幾何動物',
+//     works: [
+//       {
+//         images: [
+//           'https://images.unsplash.com/photo-1537165924986-cc3568f5d454?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=85&w=400',
+//         ],
+//       },
+//       {
+//         images: [
+//           'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
+//         ],
+//       },
+//       {
+//         images: [
+//           'https://images.unsplash.com/photo-1544787219-7f47ccb76574?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
+//         ],
+//       },
+//     ],
+//     cover:
+//       'https://images.unsplash.com/photo-1579830341096-05f2f31b8259?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTQ5Ng&ixlib=rb-1.2.1&q=80&w=800',
+//     backgroundColor: '#b56576',
+//   },
+//   {
+//     name: 'PUTTY',
+//     description: '4油灰',
+//     works: [
+//       {
+//         images: [
+//           'https://images.unsplash.com/photo-1589271243958-d61e12b61b97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=80&w=400',
+//         ],
+//       },
+//       {
+//         images: [
+//           'https://images.unsplash.com/photo-1493612276216-ee3925520721?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=80&w=400',
+//         ],
+//       },
+//       {
+//         images: [
+//           'https://images.unsplash.com/photo-1537165924986-cc3568f5d454?crop=entropy&cs=srgb&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDU4NA&ixlib=rb-1.2.1&q=85&w=400',
+//         ],
+//       },
+//       {
+//         images: [
+//           'https://images.unsplash.com/photo-1544787219-7f47ccb76574?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMyMDUzOA&ixlib=rb-1.2.1&q=80&w=400',
+//         ],
+//       },
+//     ],
+//     cover:
+//       'https://images.unsplash.com/photo-1603771628302-c32c88e568e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NjMxOTUxNg&ixlib=rb-1.2.1&q=80&w=800',
+//     backgroundColor: '#9a8c98',
+//   },
+// ])
+
+const initializeGSAP = () => {
   console.clear()
 
   const sections = gsap.utils.toArray('.slide')
-  const images = gsap.utils.toArray('.image').reverse()
+  const images = gsap.utils.toArray('.image') // 移除 .reverse()
   const outerWrappers = gsap.utils.toArray('.slide__outer')
   const innerWrappers = gsap.utils.toArray('.slide__inner')
   const count = document.querySelector('.count')
@@ -115,11 +163,27 @@ onMounted(() => {
   gsap.set(innerWrappers, { xPercent: -100 })
   gsap.set('.slide:nth-of-type(1) .slide__outer', { xPercent: 0 })
   gsap.set('.slide:nth-of-type(1) .slide__inner', { xPercent: 0 })
-  gsap.set(count, { text: `${slides.value[currentIndex].displayText}` })
+
+  // 設置初始圖片顯示狀態
+  gsap.set(images, { autoAlpha: 0 })
+  if (images[0]) {
+    gsap.set(images[0], { autoAlpha: 1 })
+  }
+
+  // 確保 slides 資料存在
+  if (slides.value.length > 0 && slides.value[currentIndex]) {
+    gsap.set(count, { text: `${slides.value[currentIndex].description || ''}` })
+  }
 
   function gotoSection(index, direction) {
     animating = true
     index = wrap(index)
+
+    // 確保索引有效且資料存在
+    if (!slides.value[index]) {
+      animating = false
+      return
+    }
 
     let tl = gsap.timeline({
       defaults: { duration: 1, ease: 'expo.inOut' },
@@ -138,14 +202,14 @@ onMounted(() => {
     let nextSlideImages = nextSection.querySelectorAll('.slide__img')
 
     gsap.set([sections, images], { zIndex: 0, autoAlpha: 0 })
-    gsap.set([sections[currentIndex], images[index]], { zIndex: 1, autoAlpha: 1 })
-    gsap.set([sections[index], images[currentIndex]], { zIndex: 2, autoAlpha: 1 })
+    gsap.set([sections[currentIndex], images[currentIndex]], { zIndex: 1, autoAlpha: 1 })
+    gsap.set([sections[index], images[index]], { zIndex: 2, autoAlpha: 1 })
 
     tl.set(count, { text: '' }, 0.32)
       .to(
         count,
         {
-          text: slides.value[index].displayText,
+          text: slides.value[index].description || '', // 加入容錯處理
           duration: 0.32,
           ease: 'none',
         },
@@ -260,6 +324,26 @@ onMounted(() => {
   window.cleanupKeyListener = () => {
     document.removeEventListener('keydown', logKey)
   }
+}
+
+const getSeries = async () => {
+  try {
+    const response = await seriesService.get()
+    slides.value = response.data.series
+    console.log('Fetched slides:', slides.value)
+
+    // 等待 DOM 更新後初始化 GSAP
+    await nextTick()
+    if (slides.value.length > 0) {
+      initializeGSAP()
+    }
+  } catch (error) {
+    console.error('Error fetching series:', error)
+  }
+}
+
+onMounted(async () => {
+  await getSeries()
 })
 
 onUnmounted(() => {
@@ -304,6 +388,21 @@ onUnmounted(() => {
   color: #fff;
   background: #4361ee;
   font-family: 'Sora', sans-serif;
+}
+
+.loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  z-index: 9999;
+
+  p {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+  }
 }
 
 .slide {
