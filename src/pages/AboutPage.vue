@@ -2,7 +2,7 @@
   <q-page>
     <div class="row justify-center">
       <div class="col-4">
-        <q-img src="src/assets/logo.jpg" />
+        <q-img src="~assets/logo.jpg" />
       </div>
     </div>
     <div class="row">
@@ -154,7 +154,7 @@
         </div>
         <!-- logo -->
         <div class="col-12 col-sm-3">
-          <q-img src="src/assets/logo.jpg" />
+          <q-img src="~assets/logo.jpg" />
         </div>
       </div>
       <div class="row justify-center">© 2023 Judy. All rights reserved.</div>
