@@ -1,6 +1,7 @@
 <template>
   <q-page>
-    <div class="row justify-center text-center q-mb-lg">
+    <!-- 主介紹區域 -->
+    <div class="row justify-center text-center q-mb-lg fade-in-section" data-section="intro">
       <div class="col-4">
         <q-img src="~assets/logo.jpg" />
       </div>
@@ -15,8 +16,9 @@
         </div>
       </div>
     </div>
+
     <!-- 主題描述區域 -->
-    <div class="row q-pa-md q-gutter-md text-center">
+    <div class="row q-pa-md q-gutter-md text-center fade-in-section" data-section="experience">
       <div class="col">
         <div>
           <q-img src="https://picsum.photos/300/200/?random=1" />
@@ -29,7 +31,8 @@
         </div>
       </div>
     </div>
-    <div class="row q-pa-md q-gutter-md text-center">
+
+    <div class="row q-pa-md q-gutter-md text-center fade-in-section" data-section="creative">
       <div class="col">
         <div>
           <h3>創作過程與風格</h3>
@@ -42,6 +45,7 @@
         </div>
       </div>
     </div>
+
     <!-- 時間軸區域 -->
     <div class="q-px-xl q-py-md fade-in-section" data-section="timeline">
       <q-timeline :layout="layout" color="secondary">
@@ -129,7 +133,7 @@
     </div>
 
     <!-- Footer 區域 -->
-    <div class="footer-section text-center bg-judy-2">
+    <div class="footer-section text-center bg-judy-2 fade-in-section" data-section="footer">
       <div class="row">
         <!-- 訂閱與追蹤 -->
         <div class="col-12 col-sm-3">
@@ -186,6 +190,7 @@
     </div>
   </q-page>
 </template>
+
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useQuasar } from 'quasar'
@@ -206,6 +211,8 @@ const newsletter = reactive({
   email: '',
 })
 
+const newsletterLoading = ref(false)
+
 // Footer 社群媒體連結
 const SocialLinks = ref([
   { name: 'Instagram', icon: 'fab fa-instagram', url: 'https://instagram.com' },
@@ -213,6 +220,44 @@ const SocialLinks = ref([
   { name: 'TikTok', icon: 'fab fa-tiktok', url: 'https://tiktok.com' },
   { name: 'Facebook', icon: 'fab fa-facebook-f', url: 'https://facebook.com' },
 ])
+
+// 訂閱電子報功能
+const subscribeNewsletter = async () => {
+  if (!newsletter.email) {
+    $q.notify({
+      type: 'warning',
+      message: '請輸入 Email 地址',
+      timeout: 2000,
+      position: 'top',
+    })
+    return
+  }
+
+  newsletterLoading.value = true
+
+  try {
+    // 模擬 API 調用
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    $q.notify({
+      type: 'positive',
+      message: '訂閱成功！感謝您的支持',
+      timeout: 3000,
+      position: 'top',
+    })
+
+    newsletter.email = ''
+  } catch (error) {
+    $q.notify({
+      type: 'negative',
+      message: '訂閱失敗，請稍後再試',
+      timeout: 3000,
+      position: 'top',
+    })
+  } finally {
+    newsletterLoading.value = false
+  }
+}
 
 // 使用 gsap.context() 管理動畫
 let ctx
@@ -223,10 +268,7 @@ onMounted(() => {
     // 設定所有區塊的初始狀態（隱藏）
     gsap.set('.fade-in-section', {
       opacity: 0,
-      y: 300,
-    })
-    gsap.set('.timeline-item', {
-      opacity: 0,
+      y: 50,
     })
 
     // 為每個區塊設定 ScrollTrigger 動畫
@@ -265,15 +307,35 @@ onMounted(() => {
             start: 'top 85%',
             end: 'bottom 15%',
             toggleActions: 'play none none reverse',
-            // markers: true, // 開發時可以開啟來看觸發點
           },
           delay: index * 0.2,
         },
       )
     })
 
-    // 手動刷新 ScrollTrigger 確保正確計算位置
-    ScrollTrigger.refresh()
+    // Footer 社群媒體按鈕的動畫
+    gsap.utils.toArray('.footer-social-links .q-btn').forEach((btn, index) => {
+      gsap.fromTo(
+        btn,
+        {
+          opacity: 0,
+          scale: 0,
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.5,
+          ease: 'back.out(1.7)',
+          scrollTrigger: {
+            trigger: '.footer-section',
+            start: 'top 80%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none reverse',
+          },
+          delay: 0.5 + index * 0.1,
+        },
+      )
+    })
   }) // 這裡的範圍是整個組件
 })
 
@@ -284,14 +346,13 @@ onUnmounted(() => {
   }
 })
 </script>
+
 <style scoped>
 .intro_title {
   font-family: 'Bandeins Sans & Strange Variable';
   color: #ff6f61;
 }
-/* .footer-section {
-  background-color: var(--judy-2);
-} */
+
 .about-description {
   font-family: 'Sora', sans-serif;
 }
@@ -307,10 +368,33 @@ onUnmounted(() => {
   object-fit: contain;
 }
 
-/*  */
 .newsletter-input {
   background: white;
   border-radius: 8px;
   margin: 10%;
+}
+
+/* ScrollTrigger 動畫的初始狀態 */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.timeline-item {
+  opacity: 0;
+}
+
+/* 確保動畫完成後的最終狀態 */
+.fade-in-section.animate-complete,
+.timeline-item.animate-complete {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 響應式設計調整 */
+@media (max-width: 768px) {
+  .fade-in-section {
+    transform: translateY(30px); /* 手機版減少位移距離 */
+  }
 }
 </style>
