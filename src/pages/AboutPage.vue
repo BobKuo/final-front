@@ -2,7 +2,7 @@
   <q-page>
     <div class="row justify-center text-center q-mb-lg">
       <div class="col-4">
-        <q-img src="~assets/logo.jpg" />
+        <q-img src="~assets/logo.png" />
       </div>
       <div class="col-12 q-gutter-lg">
         <div class="text-h2 intro_title">I'm Judy</div>
@@ -178,7 +178,7 @@
         </div>
         <!-- logo -->
         <div class="col-12 col-sm-3">
-          <q-img src="~assets/logo.jpg" />
+          <q-img src="~assets/logo.png" />
         </div>
       </div>
       <div class="row justify-center">© 2023 Judy. All rights reserved.</div>

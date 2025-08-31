@@ -250,7 +250,7 @@ const subscribeNewsletter = async () => {
   } catch (error) {
     $q.notify({
       type: 'negative',
-      message: '訂閱失敗，請稍後再試',
+      message: '訂閱失敗，請稍後再試: ' + error.message,
       timeout: 3000,
       position: 'top',
     })

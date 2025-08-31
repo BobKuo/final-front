@@ -12,7 +12,7 @@
         <q-toolbar-title>
           <q-btn flat to="/">
             <q-avatar>
-              <img src="~assets/logo.jpg" alt="logo" />
+              <img src="~assets/logo.png" alt="logo" />
               <!-- <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" /> -->
             </q-avatar>
             <span class="q-ml-md">JUDY WANG ART</span>
@@ -107,7 +107,7 @@ const headerVisible = ref(true)
 const navItems = computed(() => [
   // { to: '/daily', label: '365日常', show: true },
   { to: '/work', label: '作品集', show: true },
-  // { to: '/paper', label: '著色紙 下載', show: userStore.isLoggedIn },
+  { to: '/paper', label: '著色紙 下載', show: userStore.isLoggedIn },
   { to: '/shopping', label: '原畫及周邊', show: userStore.isLoggedIn },
   { to: '/clips', label: '小短片' },
   { to: '/about', label: '關於我' },
