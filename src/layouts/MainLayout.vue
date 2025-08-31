@@ -77,7 +77,7 @@
       </q-page-sticky>
     </q-page-container>
 
-    <q-footer elevated class="bg-grey-8 text-white my-footer">
+    <!-- <q-footer elevated class="bg-grey-8 text-white my-footer">
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
@@ -85,7 +85,7 @@
           </q-avatar>
         </q-toolbar-title>
       </q-toolbar>
-    </q-footer>
+    </q-footer> -->
   </q-layout>
 </template>
 
@@ -105,13 +105,14 @@ const headerVisible = ref(true)
 
 //
 const navItems = computed(() => [
-  { to: '/daily', label: '365日常', show: true },
+  // { to: '/daily', label: '365日常', show: true },
   { to: '/work', label: '作品集', show: true },
-  { to: '/paper', label: '著色紙下載', show: userStore.isLoggedIn },
+  // { to: '/paper', label: '著色紙 下載', show: userStore.isLoggedIn },
   { to: '/shopping', label: '原畫及周邊', show: userStore.isLoggedIn },
   { to: '/clips', label: '小短片' },
   { to: '/about', label: '關於我' },
-  { to: '/contact', label: '聯絡我' },
+  // { to: '/aboutsample', label: '關於我範例' },
+  // { to: '/contact', label: '聯絡我' },
   { to: '/admin/works', label: '管理後台', show: userStore.isLoggedIn && userStore.isAdmin },
 ])
 

@@ -432,7 +432,7 @@ onUnmounted(() => {
 }
 
 .slide {
-  height: calc(100vh - 100px);
+  height: calc(100vh - 50px);
   width: 100%;
   // top: 0;
   position: fixed;

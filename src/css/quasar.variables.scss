@@ -31,3 +31,14 @@ $judy-4: #7ab8a3;
 $judy-5: #d9a441;
 $judy-6: #aaaaaa;
 $judy-7: #3a4e3d;
+
+// 將 SCSS 變數轉換為 CSS 變數
+:root {
+  --judy-1: #{$judy-1};
+  --judy-2: #{$judy-2};
+  --judy-3: #{$judy-3};
+  --judy-4: #{$judy-4};
+  --judy-5: #{$judy-5};
+  --judy-6: #{$judy-6};
+  --judy-7: #{$judy-7};
+}

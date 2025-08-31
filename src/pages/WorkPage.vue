@@ -1,232 +1,365 @@
 <template>
-  <q-page>
-    <!-- <div id="index" class="flex flex-center text-h1">start</div> -->
-    <div id="container">
-      <div
-        v-for="(series, index) in workSeries"
-        :key="index"
-        :style="{ backgroundColor: series.color }"
-        class="slide flex flex-center text-h1"
-      >
-        <div
-          class="work-display"
-          :class="{
-            'justify-start': index % 2 === 0,
-            'justify-end': index % 2 !== 0,
-          }"
-        >
-          <div class="img_container">
-            <img :src="series.works[0].image" alt="" />
-          </div>
+  <div class="projects-section">
+    <div class="container">
+      <div class="q-pa-md">
+        <!-- 載入狀態 -->
+        <div v-if="loading" class="loading-container">
+          <q-spinner size="50px" color="primary" />
+          <p class="q-mt-md">載入中...</p>
+        </div>
 
-          <div
-            class="content-overlay"
-            :class="{ 'content-right': index % 2 === 0, 'content-left': index % 2 !== 0 }"
+        <!-- Carousel -->
+        <q-carousel
+          v-else
+          v-model="slide"
+          transition-prev="slide-right"
+          transition-next="slide-left"
+          animated
+          control-color="primary"
+          class="rounded-borders"
+        >
+          <q-carousel-slide
+            v-for="series in allSeries"
+            :key="series._id"
+            :name="series._id"
+            :img-src="series.cover"
           >
-            <div class="series-title">{{ series.title }}</div>
-            <div class="series-description q-mt-xl q-mb-lg">{{ series.description }}</div>
+            <div class="absolute-bottom custom-caption">
+              <div class="text-h2">{{ series.name }}</div>
+              <div class="text-subtitle1">{{ series.description }}</div>
+            </div>
+          </q-carousel-slide>
+        </q-carousel>
+
+        <!-- Carousel 控制按鈕 -->
+        <div v-if="!loading && allSeries.length > 0" class="row justify-center q-mt-md">
+          <q-btn-toggle
+            v-model="slide"
+            :options="carouselOptions"
+            toggle-color="primary"
+            color="white"
+            text-color="primary"
+            unelevated
+          />
+        </div>
+      </div>
+
+      <!-- 顯示當前選中系列的作品 -->
+      <div v-if="currentSeries">
+        <h2 class="section-title">{{ currentSeries.name }} - 作品集</h2>
+
+        <!-- 如果當前系列有作品 -->
+        <div v-if="currentWorks.length > 0" class="projects-grid">
+          <WorkCard
+            v-for="(work, index) in currentWorks"
+            :key="work._id"
+            :project="transformWorkToProject(work)"
+            :is-reverse="index % 2 === 1"
+            @view-project="handleViewProject"
+          />
+        </div>
+
+        <!-- 如果當前系列沒有作品 -->
+        <div v-else class="no-works-container">
+          <div class="no-works-message">
+            <q-icon name="image" size="4rem" color="grey-5" />
+            <h3>此系列暫無作品</h3>
+            <p>請選擇其他系列查看作品</p>
           </div>
         </div>
       </div>
     </div>
-    <div id="index" class="flex flex-center text-h1">end</div>
-  </q-page>
+  </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import WorkCard from 'src/components/WorkCard.vue'
+import seriesService from 'src/services/series'
+import workService from 'src/services/work'
 
 gsap.registerPlugin(ScrollTrigger)
-gsap.defaults({ ease: 'none' })
 
-// 定義 slides 資料
-// 作品系列資料
-const workSeries = ref([
-  {
-    id: 1,
-    title: '動物喝茶系列',
-    description: '探索潛意識的色彩與形狀',
-    year: '2023',
-    count: 8,
-    color: '#FF6B6B',
-    works: [
-      {
-        id: 1,
-        title: '長頸鹿喝茶',
-        image:
-          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755832805/works/samezymj56l3pff5mehj.jpg',
-        description: '這是一個關於動物與茶的系列作品，探索它們之間的微妙關係。',
-      },
-      {
-        id: 2,
-        title: '藍色憂鬱',
-        image:
-          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755832874/works/k5u71ssa2am42dx5cavx.jpg',
-        medium: '油畫',
-      },
-      {
-        id: 3,
-        title: '金色幻想',
-        image:
-          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755833079/works/pvoeot36vhpdpj7csdc2.jpg',
-        medium: '數位繪畫',
-      },
-      {
-        id: 4,
-        title: '紫色迷霧',
-        image:
-          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755833132/works/qyyhcxlmzxwdhp9ymvfv.jpg',
-        medium: '壓克力',
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: '都市印象',
-    description: '現代城市的光影與節奏',
-    year: '2022',
-    count: 6,
-    color: '#4ECDC4',
-    works: [
-      {
-        id: 5,
-        title: '霓虹夜景',
-        image:
-          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755833079/works/pvoeot36vhpdpj7csdc2.jpg',
-        medium: '數位繪畫',
-      },
-      { id: 6, title: '地鐵風景', image: '/images/city2.jpg', medium: '速寫' },
-      { id: 7, title: '摩天大樓', image: '/images/city3.jpg', medium: '水彩' },
-      { id: 8, title: '街頭塗鴉', image: '/images/city4.jpg', medium: '噴漆' },
-    ],
-  },
-  {
-    id: 3,
-    title: '自然詩篇',
-    description: '大自然的原始美感',
-    year: '2021',
-    count: 10,
-    color: '#95E1D3',
-    works: [
-      { id: 9, title: '森林秘境', image: '/images/nature1.jpg', medium: '油畫' },
-      { id: 10, title: '海浪之歌', image: '/images/nature2.jpg', medium: '水彩' },
-      { id: 11, title: '山嵐飄渺', image: '/images/nature3.jpg', medium: '國畫' },
-      { id: 12, title: '花語綻放', image: '/images/nature4.jpg', medium: '壓克力' },
-    ],
-  },
-])
+// 響應式資料
+const allSeries = ref([])
+const allWorks = ref([])
+const loading = ref(true)
+const slide = ref('')
 
-onMounted(() => {
-  let sections = gsap.utils.toArray('.slide')
-
-  gsap.to(sections, {
-    xPercent: -100 * (sections.length - 1),
-    scrollTrigger: {
-      trigger: '#container',
-      start: 'top top+=50',
-      end: `+=${workSeries.value.length * 300}`, // 根據 slide 數量動態調整
-      scrub: 1,
-      snap: (value) => {
-        const total = sections.length - 1
-        const slide = Math.round(value * total)
-        return slide / total
-      },
-      pin: true,
-      markers: true,
-    },
-  })
+// 計算屬性：生成 carousel 控制按鈕選項
+const carouselOptions = computed(() => {
+  return allSeries.value.map((series) => ({
+    label: series.name,
+    value: series._id,
+  }))
 })
-</script>
 
-<style scoped>
-#index {
-  height: calc(100vh - 100px);
-  width: 100vw;
-  border: 5px solid red;
-}
+// 計算屬性：當前選中的系列
+const currentSeries = computed(() => {
+  return allSeries.value.find((series) => series._id === slide.value) // slide 為選到的系列 ID
+})
 
-#container {
-  /* height: calc(100vh - 50px);
-  width: 100vw; */
+// 計算屬性：當前系列的作品
+const currentWorks = computed(() => {
+  return allWorks.value.filter((work) => work.category === slide.value) // slide 為選到的系列 ID
+})
 
-  display: flex;
-  flex-direction: row;
-  overflow-x: hidden;
-}
-
-.slide {
-  flex: 0 0 100%;
-  height: calc(100vh - 50px);
-}
-
-.work-display {
-  width: 80%;
-  height: 80%;
-
-  position: relative;
-
-  /* border: 1px solid black; */
-
-  display: flex;
-  align-items: center;
-}
-
-.img_container {
-  width: 80%;
-  height: 100%;
-  position: relative;
-
-  /* border: 1px solid blue; */
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+// 將 work 物件轉換為 WorkCard 元件需要的 project 格式
+const transformWorkToProject = (work) => {
+  return {
+    id: work._id,
+    title: work.name,
+    category: currentSeries.value?.name || '作品', // 使用系列名稱作為分類
+    description: work.content || '暫無描述',
+    image: work.images?.[0] || 'https://via.placeholder.com/600x400?text=No+Image', // 使用第一張圖片
   }
 }
 
-.content-overlay {
-  position: absolute;
+// 監聽 slide 變化，可以添加切換動畫
+watch(slide, (newSlide, oldSlide) => {
+  if (newSlide !== oldSlide && newSlide) {
+    console.log('切換到系列:', currentSeries.value?.name)
+    console.log('該系列作品數量:', currentWorks.value.length)
 
-  top: 50%;
-  transform: translateY(-50%);
+    // 可以在這裡添加切換動畫
+    // animateWorksTransition()
+  }
+})
 
-  background: rgba(255, 255, 255, 0.5);
-  color: black;
+// 作品切換動畫
+// const animateWorksTransition = () => {
+//   // 等待 DOM 更新後執行動畫
+//   setTimeout(() => {
+//     gsap.fromTo(
+//       '.projects-grid .work-card',
+//       {
+//         y: 50,
+//         opacity: 0,
+//       },
+//       {
+//         y: 0,
+//         opacity: 1,
+//         duration: 0.6,
+//         stagger: 0.1,
+//         ease: 'power2.out',
+//       },
+//     )
+//   }, 50)
+// }
 
-  /* padding: 5rem; */
-  border-radius: 10px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  z-index: 10;
+// const projects = ref([
+//   {
+//     id: 1,
+//     title: 'Mountain Resort Branding',
+//     category: 'Branding & Identity',
+//     description:
+//       'Complete brand identity design for a luxury mountain resort, including logo design, color palette, and brand guidelines.',
+//     image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+//   },
+//   {
+//     id: 2,
+//     title: 'Forest Conservation Website',
+//     category: 'Web Design',
+//     description:
+//       'Responsive website design for an environmental organization focused on forest conservation and sustainability initiatives.',
+//     image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop',
+//   },
+//   {
+//     id: 3,
+//     title: 'Nature Photography Portfolio',
+//     category: 'Portfolio Design',
+//     description:
+//       'Clean and minimalist portfolio website showcasing stunning nature photography with smooth transitions and galleries.',
+//     image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+//   },
+//   {
+//     id: 4,
+//     title: 'Outdoor Adventure App',
+//     category: 'UI/UX Design',
+//     description:
+//       'Mobile app design for outdoor enthusiasts, featuring trail maps, weather updates, and community features.',
+//     image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop',
+//   },
+// ])
 
-  width: 30%;
-  height: auto;
+const getSeries = async () => {
+  try {
+    loading.value = true
+    const response = await seriesService.get()
+    allSeries.value = response.data.series
+
+    // 設定預設的 slide（第一個系列）
+    if (allSeries.value.length > 0) {
+      slide.value = allSeries.value[0]._id
+    }
+  } catch (error) {
+    console.error('Error fetching series:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
-/* 奇數張 series (index 0, 2, 4...) - content 在右邊 */
-.content-right {
-  right: 0;
+const getWorks = async () => {
+  try {
+    loading.value = true
+    const response = await workService.get()
+    allWorks.value = response.data.works
+  } catch (error) {
+    console.error('Error fetching works:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
-/* 偶數張 series (index 1, 3, 5...) - content 在左邊 */
-.content-left {
-  left: 0;
+onMounted(async () => {
+  // 頁面載入時呼叫 API
+  await getSeries()
+  await getWorks()
+
+  // 滾動觸發動畫
+  // gsap.fromTo(
+  //   '.project-item',
+  //   {
+  //     y: 100,
+  //     opacity: 0,
+  //   },
+  //   {
+  //     y: 0,
+  //     opacity: 1,
+  //     duration: 1,
+  //     stagger: 0.2,
+  //     ease: 'power2.out',
+  //     scrollTrigger: {
+  //       trigger: '.projects-grid',
+  //       start: 'top 80%',
+  //       end: 'bottom 20%',
+  //       toggleActions: 'play none none reverse',
+  //     },
+  //   },
+  // )
+  // 圖片視差效果
+  // gsap.utils.toArray('.project-image img').forEach((img) => {
+  //   gsap.fromTo(
+  //     img,
+  //     { scale: 1.2 },
+  //     {
+  //       scale: 1,
+  //       duration: 1.5,
+  //       ease: 'power2.out',
+  //       scrollTrigger: {
+  //         trigger: img.closest('.project-item'),
+  //         start: 'top 90%',
+  //         end: 'bottom 10%',
+  //         scrub: 1,
+  //       },
+  //     },
+  //   )
+  // })
+})
+
+const handleViewProject = (project) => {
+  console.log('View project:', project)
+  // 這裡可以添加導航到項目詳情頁的邏輯
+  // 例如: router.push(`/projects/${project.id}`)
+}
+</script>
+
+<style scoped lang="scss">
+.projects-section {
+  // padding: 120px 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
 }
 
-.series-title {
-  font-family: 'Dela Gothic One', sans-serif;
-  font-size: 90px;
-  /* font-weight: bold; */
-  color: blue;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
   text-align: center;
+  margin-bottom: 80px;
+  color: #2d3436;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #6c5ce7, #a29bfe);
+    border-radius: 2px;
+  }
 }
 
-.series-description {
-  font-size: 40px;
-  color: gray;
-  padding: 10px 20px;
+.projects-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+// 無作品時的樣式
+.no-works-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+
+  .no-works-message {
+    text-align: center;
+    color: #636e72;
+
+    h3 {
+      margin: 1rem 0 0.5rem 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+  }
+}
+
+.custom-caption {
+  text-align: center;
+  padding: 12px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+// 響應式設計
+@media (max-width: 1024px) {
+  .projects-section {
+    padding: 80px 0;
+  }
+
+  .projects-grid {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-section {
+    padding: 60px 0;
+  }
+
+  .section-title {
+    margin-bottom: 60px;
+  }
+
+  .projects-grid {
+    gap: 0px;
+  }
 }
 </style>

@@ -1,373 +1,232 @@
 <template>
-  <div class="projects-section">
-    <div class="container">
-      <h2 class="section-title">Featured Projects</h2>
-
-      <div class="projects-grid">
+  <q-page>
+    <!-- <div id="index" class="flex flex-center text-h1">start</div> -->
+    <div id="container">
+      <div
+        v-for="(series, index) in workSeries"
+        :key="index"
+        :style="{ backgroundColor: series.color }"
+        class="slide flex flex-center text-h1"
+      >
         <div
-          v-for="(project, index) in projects"
-          :key="project.id"
-          class="project-item"
-          :class="{ reverse: index % 2 === 1 }"
-          @mouseenter="handleMouseEnter(index)"
-          @mouseleave="handleMouseLeave(index)"
+          class="work-display"
+          :class="{
+            'justify-start': index % 2 === 0,
+            'justify-end': index % 2 !== 0,
+          }"
         >
-          <div class="project-image">
-            <img :src="project.image" :alt="project.title" class="main-image" />
-            <div class="image-overlay"></div>
+          <div class="img_container">
+            <img :src="series.works[0].image" alt="" />
           </div>
 
-          <div class="project-content">
-            <div class="project-category">{{ project.category }}</div>
-            <h3 class="project-title">{{ project.title }}</h3>
-            <p class="project-description">{{ project.description }}</p>
-            <button class="project-link">
-              <span>View Project</span>
-              <svg class="arrow-icon" viewBox="0 0 24 24">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
+          <div
+            class="content-overlay"
+            :class="{ 'content-right': index % 2 === 0, 'content-left': index % 2 !== 0 }"
+          >
+            <div class="series-title">{{ series.title }}</div>
+            <div class="series-description q-mt-xl q-mb-lg">{{ series.description }}</div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+    <div id="index" class="flex flex-center text-h1">end</div>
+  </q-page>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
+gsap.defaults({ ease: 'none' })
 
-const projects = ref([
+// 定義 slides 資料
+// 作品系列資料
+const workSeries = ref([
   {
     id: 1,
-    title: 'Mountain Resort Branding',
-    category: 'Branding & Identity',
-    description:
-      'Complete brand identity design for a luxury mountain resort, including logo design, color palette, and brand guidelines.',
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+    title: '動物喝茶系列',
+    description: '探索潛意識的色彩與形狀',
+    year: '2023',
+    count: 8,
+    color: '#FF6B6B',
+    works: [
+      {
+        id: 1,
+        title: '長頸鹿喝茶',
+        image:
+          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755832805/works/samezymj56l3pff5mehj.jpg',
+        description: '這是一個關於動物與茶的系列作品，探索它們之間的微妙關係。',
+      },
+      {
+        id: 2,
+        title: '藍色憂鬱',
+        image:
+          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755832874/works/k5u71ssa2am42dx5cavx.jpg',
+        medium: '油畫',
+      },
+      {
+        id: 3,
+        title: '金色幻想',
+        image:
+          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755833079/works/pvoeot36vhpdpj7csdc2.jpg',
+        medium: '數位繪畫',
+      },
+      {
+        id: 4,
+        title: '紫色迷霧',
+        image:
+          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755833132/works/qyyhcxlmzxwdhp9ymvfv.jpg',
+        medium: '壓克力',
+      },
+    ],
   },
   {
     id: 2,
-    title: 'Forest Conservation Website',
-    category: 'Web Design',
-    description:
-      'Responsive website design for an environmental organization focused on forest conservation and sustainability initiatives.',
-    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop',
+    title: '都市印象',
+    description: '現代城市的光影與節奏',
+    year: '2022',
+    count: 6,
+    color: '#4ECDC4',
+    works: [
+      {
+        id: 5,
+        title: '霓虹夜景',
+        image:
+          'https://res.cloudinary.com/dm5rlvzns/image/upload/v1755833079/works/pvoeot36vhpdpj7csdc2.jpg',
+        medium: '數位繪畫',
+      },
+      { id: 6, title: '地鐵風景', image: '/images/city2.jpg', medium: '速寫' },
+      { id: 7, title: '摩天大樓', image: '/images/city3.jpg', medium: '水彩' },
+      { id: 8, title: '街頭塗鴉', image: '/images/city4.jpg', medium: '噴漆' },
+    ],
   },
   {
     id: 3,
-    title: 'Nature Photography Portfolio',
-    category: 'Portfolio Design',
-    description:
-      'Clean and minimalist portfolio website showcasing stunning nature photography with smooth transitions and galleries.',
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
-  },
-  {
-    id: 4,
-    title: 'Outdoor Adventure App',
-    category: 'UI/UX Design',
-    description:
-      'Mobile app design for outdoor enthusiasts, featuring trail maps, weather updates, and community features.',
-    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop',
+    title: '自然詩篇',
+    description: '大自然的原始美感',
+    year: '2021',
+    count: 10,
+    color: '#95E1D3',
+    works: [
+      { id: 9, title: '森林秘境', image: '/images/nature1.jpg', medium: '油畫' },
+      { id: 10, title: '海浪之歌', image: '/images/nature2.jpg', medium: '水彩' },
+      { id: 11, title: '山嵐飄渺', image: '/images/nature3.jpg', medium: '國畫' },
+      { id: 12, title: '花語綻放', image: '/images/nature4.jpg', medium: '壓克力' },
+    ],
   },
 ])
 
 onMounted(() => {
-  // 滾動觸發動畫
-  gsap.fromTo(
-    '.project-item',
-    {
-      y: 100,
-      opacity: 0,
-    },
-    {
-      y: 0,
-      opacity: 1,
-      duration: 1,
-      stagger: 0.2,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.projects-grid',
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse',
-      },
-    },
-  )
+  let sections = gsap.utils.toArray('.slide')
 
-  // 圖片視差效果
-  gsap.utils.toArray('.project-image img').forEach((img) => {
-    gsap.fromTo(
-      img,
-      { scale: 1.2 },
-      {
-        scale: 1,
-        duration: 1.5,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: img.closest('.project-item'),
-          start: 'top 90%',
-          end: 'bottom 10%',
-          scrub: 1,
-        },
+  gsap.to(sections, {
+    xPercent: -100 * (sections.length - 1),
+    scrollTrigger: {
+      trigger: '#container',
+      start: 'top top+=50',
+      end: `+=${workSeries.value.length * 300}`, // 根據 slide 數量動態調整
+      scrub: 1,
+      snap: (value) => {
+        const total = sections.length - 1
+        const slide = Math.round(value * total)
+        return slide / total
       },
-    )
+      pin: true,
+      markers: true,
+    },
   })
 })
-
-const handleMouseEnter = (index) => {
-  const item = document.querySelectorAll('.project-item')[index]
-  const image = item.querySelector('.main-image')
-  const overlay = item.querySelector('.image-overlay')
-  const content = item.querySelector('.project-content')
-
-  gsap.to(image, { scale: 1.1, duration: 0.6, ease: 'power2.out' })
-  gsap.to(overlay, { opacity: 0.3, duration: 0.3 })
-  gsap.to(content, { y: -10, duration: 0.3 })
-}
-
-const handleMouseLeave = (index) => {
-  const item = document.querySelectorAll('.project-item')[index]
-  const image = item.querySelector('.main-image')
-  const overlay = item.querySelector('.image-overlay')
-  const content = item.querySelector('.project-content')
-
-  gsap.to(image, { scale: 1, duration: 0.6, ease: 'power2.out' })
-  gsap.to(overlay, { opacity: 0, duration: 0.3 })
-  gsap.to(content, { y: 0, duration: 0.3 })
-}
 </script>
 
-<style scoped lang="scss">
-.projects-section {
-  padding: 120px 0;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  min-height: 100vh;
+<style scoped>
+#index {
+  height: calc(100vh - 100px);
+  width: 100vw;
+  border: 5px solid red;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
+#container {
+  /* height: calc(100vh - 50px);
+  width: 100vw; */
 
-.section-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 80px;
-  color: #2d3436;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(90deg, #6c5ce7, #a29bfe);
-    border-radius: 2px;
-  }
-}
-
-.projects-grid {
   display: flex;
-  flex-direction: column;
-  gap: 120px;
+  flex-direction: row;
+  overflow-x: hidden;
 }
 
-.project-item {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
+.slide {
+  flex: 0 0 100%;
+  height: calc(100vh - 50px);
+}
+
+.work-display {
+  width: 80%;
+  height: 80%;
+
+  position: relative;
+
+  /* border: 1px solid black; */
+
+  display: flex;
   align-items: center;
-  position: relative;
-
-  &.reverse {
-    .project-image {
-      order: 2;
-    }
-    .project-content {
-      order: 1;
-    }
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 40px;
-
-    &.reverse {
-      .project-image,
-      .project-content {
-        order: unset;
-      }
-    }
-  }
 }
 
-.project-image {
+.img_container {
+  width: 80%;
+  height: 100%;
   position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
 
-  .main-image {
+  /* border: 1px solid blue; */
+
+  img {
     width: 100%;
-    height: 400px;
+    height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease;
-  }
-
-  .image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, #6c5ce7, #a29bfe);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    object-position: center;
   }
 }
 
-.project-content {
-  padding: 0 20px;
+.content-overlay {
+  position: absolute;
 
-  .project-category {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #6c5ce7;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 16px;
-    position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 
-    &::before {
-      content: '';
-      position: absolute;
-      left: -20px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 12px;
-      height: 2px;
-      background: #6c5ce7;
-    }
-  }
+  background: rgba(255, 255, 255, 0.5);
+  color: black;
 
-  .project-title {
-    font-size: clamp(1.8rem, 3vw, 2.5rem);
-    font-weight: 700;
-    color: #2d3436;
-    margin-bottom: 20px;
-    line-height: 1.2;
-  }
+  /* padding: 5rem; */
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  z-index: 10;
 
-  .project-description {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #636e72;
-    margin-bottom: 30px;
-  }
-
-  .project-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 32px;
-    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #a29bfe, #6c5ce7);
-      transition: left 0.3s ease;
-      z-index: -1;
-    }
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 40px rgba(108, 92, 231, 0.3);
-
-      &::before {
-        left: 0;
-      }
-
-      .arrow-icon {
-        transform: translateX(4px);
-      }
-    }
-
-    .arrow-icon {
-      width: 20px;
-      height: 20px;
-      stroke: currentColor;
-      stroke-width: 2;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      transition: transform 0.3s ease;
-    }
-  }
+  width: 30%;
+  height: auto;
 }
 
-// 響應式設計
-@media (max-width: 1024px) {
-  .projects-section {
-    padding: 80px 0;
-  }
-
-  .projects-grid {
-    gap: 80px;
-  }
-
-  .project-item {
-    gap: 40px;
-  }
+/* 奇數張 series (index 0, 2, 4...) - content 在右邊 */
+.content-right {
+  right: 0;
 }
 
-@media (max-width: 768px) {
-  .projects-section {
-    padding: 60px 0;
-  }
+/* 偶數張 series (index 1, 3, 5...) - content 在左邊 */
+.content-left {
+  left: 0;
+}
 
-  .section-title {
-    margin-bottom: 60px;
-  }
+.series-title {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 90px;
+  /* font-weight: bold; */
+  color: blue;
+  text-align: center;
+}
 
-  .projects-grid {
-    gap: 60px;
-  }
-
-  .project-content {
-    padding: 0;
-
-    .project-category::before {
-      display: none;
-    }
-  }
-
-  .project-image .main-image {
-    height: 300px;
-  }
+.series-description {
+  font-size: 40px;
+  color: gray;
+  padding: 10px 20px;
 }
 </style>

@@ -24,7 +24,8 @@ const routes = [
         meta: { title: '購物車結帳' },
       },
       // { path: 'clips', component: () => import('pages/ClipsPage.vue') },
-      // { path: 'about', component: () => import('pages/AboutPage.vue') },
+      { path: 'about', component: () => import('pages/AboutPage.vue') },
+      { path: 'aboutsample', component: () => import('src/pages/AboutPage_sample.vue') },
       // { path: 'contact', component: () => import('pages/ContactPage.vue') },
       {
         path: 'product/:id',
