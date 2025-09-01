@@ -8,14 +8,14 @@
       class="bg-primary text-white my-header"
       height-hint="98"
     >
-      <q-toolbar>
+      <q-toolbar class="q-pl-none">
         <q-toolbar-title>
           <q-btn flat to="/">
             <q-avatar>
               <img src="~assets/logo.png" alt="logo" />
               <!-- <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" /> -->
             </q-avatar>
-            <span class="q-ml-md">JUDY WANG ART</span>
+            <span class="q-ml-xs">JUDY WANG ART</span>
           </q-btn>
         </q-toolbar-title>
 
@@ -30,7 +30,13 @@
             />
           </template>
         </q-tabs>
-        <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
+        <q-btn
+          flat
+          dense
+          :icon="userStore.isLoggedIn ? 'person' : 'person_add'"
+          :label="userStore.isLoggedIn ? userStore.account : '登入 / 註冊'"
+          @click="toggleRightDrawer"
+        />
       </q-toolbar>
     </q-header>
 
@@ -106,9 +112,9 @@ const headerVisible = ref(true)
 //
 const navItems = computed(() => [
   // { to: '/daily', label: '365日常', show: true },
-  { to: '/work', label: '作品集', show: true },
-  { to: '/paper', label: '著色紙 下載', show: userStore.isLoggedIn },
-  { to: '/shopping', label: '原畫及周邊', show: userStore.isLoggedIn },
+  { to: '/work', label: '作品集' },
+  // { to: '/paper', label: '著色紙 下載', show: userStore.isLoggedIn },
+  { to: '/shopping', label: '原畫及周邊' },
   { to: '/clips', label: '小短片' },
   { to: '/about', label: '關於我' },
   // { to: '/aboutsample', label: '關於我範例' },

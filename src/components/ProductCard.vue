@@ -100,6 +100,14 @@ const userStore = useUserStore()
 const $q = useQuasar()
 
 const addToCart = async () => {
+  if (!userStore.isLoggedIn) {
+    $q.dialog({
+      title: '需要登入',
+      message: '請先登入帳號才能加入購物車',
+    })
+    return
+  }
+
   try {
     const { data } = await userService.cart({
       product: product._id,
@@ -117,7 +125,7 @@ const addToCart = async () => {
     console.error('Error fetching products:', error)
     $q.notify({
       type: 'negative',
-      message: '無法加入購物車',
+      message: '無法加入購物車，請稍後再試',
     })
   }
 }

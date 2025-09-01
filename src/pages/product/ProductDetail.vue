@@ -147,6 +147,13 @@ const getProduct = async () => {
 getProduct()
 
 const addToCart = async () => {
+  if (!userStore.isLoggedIn) {
+    $q.dialog({
+      title: '需要登入',
+      message: '請先登入帳號才能加入購物車',
+    })
+    return
+  }
   try {
     const { data } = await userService.cart({
       product: route.params.id,
