@@ -81,7 +81,7 @@
             :error-message="sell.errorMessage.value"
           />
           <q-card-actions align="right">
-            <q-btn color="secondary" @click="closeDialog">取消</q-btn>
+            <q-btn color="secondary" @click="closeDialog()">取消</q-btn>
             <q-btn type="submit" :loading="isSubmitting" color="primary">{{
               props.product ? '更新' : '新增'
             }}</q-btn>
@@ -182,10 +182,10 @@ const submit = handleSubmit(async (values) => {
   }
 
   // 圖片數量限制
-  if (props.product?.images.length + fileRecords?.value.length > 5) {
+  if (existedImages.value.length + fileRecords?.value.length > 5) {
     $q.dialog({
       title: '錯誤',
-      message: `最多只能再上傳 ${5 - props.product.images.length} 張圖片`,
+      message: `最多只能再上傳 ${5 - existedImages.value.length} 張圖片`,
     })
     return
   }
@@ -214,8 +214,6 @@ const submit = handleSubmit(async (values) => {
     const { data } = await (props.product
       ? productService.update(props.product._id, fd)
       : productService.create(fd))
-
-    console.log('data---', data)
 
     $q.notify({
       type: 'positive',
