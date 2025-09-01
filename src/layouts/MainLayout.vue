@@ -138,7 +138,7 @@ const navItems = computed(() => [
   { to: '/about', label: '關於我' },
   // { to: '/aboutsample', label: '關於我範例' },
   // { to: '/contact', label: '聯絡我' },
-  { to: '/admin/works', label: '管理後台', show: userStore.isLoggedIn && userStore.isAdmin },
+  // { to: '/admin/works', label: '管理後台', show: userStore.isLoggedIn && userStore.isAdmin },
 ])
 
 // 切換右側側欄

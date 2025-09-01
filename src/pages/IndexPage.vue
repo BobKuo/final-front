@@ -316,12 +316,10 @@ const initializeGSAP = () => {
     preventDefault: true,
     wheelSpeed: -1,
     onUp: () => {
-      console.log('down')
       if (animating) return
       gotoSection(currentIndex + 1, +1)
     },
     onDown: () => {
-      console.log('up')
       if (animating) return
       gotoSection(currentIndex - 1, -1)
     },
