@@ -1,6 +1,6 @@
 <template>
   <div
-    class="project-item"
+    class="project-item bg-judy-1"
     :class="{ reverse: isReverse }"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
@@ -14,9 +14,29 @@
           @click="openImageDialog"
         />
         <q-card-actions :align="isReverse ? 'left' : 'right'">
-          <q-btn flat round color="red" icon="favorite"></q-btn>
-          <q-btn flat round color="teal" icon="bookmark"></q-btn>
-          <q-btn flat round color="primary" icon="share"></q-btn>
+          <div class="row full-width items-center">
+            <div class="col">
+              <div class="row justify-end q-gutter-xs">
+                <q-chip
+                  square
+                  :color="`judy-${2 + (index % 5)}`"
+                  text-color="white"
+                  icon="tag"
+                  v-for="(tag, index) in project.tags"
+                  :key="tag"
+                >
+                  {{ tag }}
+                </q-chip>
+              </div>
+            </div>
+            <div class="col-3">
+              <div class="row justify-end">
+                <q-btn flat round color="red" icon="favorite"></q-btn>
+                <q-btn flat round color="teal" icon="bookmark"></q-btn>
+                <q-btn flat round color="primary" icon="share"></q-btn>
+              </div>
+            </div>
+          </div>
         </q-card-actions>
       </q-card>
     </div>
@@ -26,7 +46,7 @@
       <h3 class="project-title">{{ project.title }}</h3>
       <p class="project-description">{{ project.description }}</p>
       <button class="project-link" @click="$emit('view-project', project)">
-        <span>View Project</span>
+        <span>放大看作品</span>
         <svg class="arrow-icon" viewBox="0 0 24 24">
           <path d="M5 12h14M12 5l7 7-7 7" />
         </svg>

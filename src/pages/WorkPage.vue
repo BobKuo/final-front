@@ -45,11 +45,13 @@
       </div>
 
       <!-- 顯示當前選中系列的作品 -->
-      <div v-if="currentSeries">
-        <h2 class="section-title">{{ currentSeries.name }} - 作品集</h2>
+      <div v-if="currentSeries" class="row justify-center">
+        <div class="col-12">
+          <h2 class="section-title">{{ currentSeries.name }} - 作品集</h2>
+        </div>
 
         <!-- 如果當前系列有作品 -->
-        <div v-if="currentWorks.length > 0" class="projects-grid">
+        <div v-if="currentWorks.length > 0" class="projects-grid col-12 col-md-10">
           <WorkCard
             v-for="(work, index) in currentWorks"
             :key="work._id"
@@ -111,9 +113,10 @@ const transformWorkToProject = (work) => {
   return {
     id: work._id,
     title: work.name,
-    category: currentSeries.value?.name || '作品', // 使用系列名稱作為分類
+    category: currentSeries.value?.name || '未分類', // 使用系列名稱作為分類
     description: work.content || '暫無描述',
     image: work.images?.[0] || 'https://via.placeholder.com/600x400?text=No+Image', // 使用第一張圖片
+    tags: work.tags || [],
   }
 }
 
@@ -274,7 +277,7 @@ const handleViewProject = (project) => {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1920px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -301,8 +304,8 @@ const handleViewProject = (project) => {
 }
 
 .projects-grid {
-  display: flex;
-  flex-direction: column;
+  // display: flex;
+  // flex-direction: column;
   gap: 60px;
 }
 
