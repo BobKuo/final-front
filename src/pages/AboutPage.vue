@@ -9,6 +9,7 @@
         <div class="text-h6 about-description">
           <p>Judy Wang，本名王君儀，台灣台北人。</p>
           <p>臺師大大傳所畢業，曾任職中央社、奧美公關、痞客邦等傳播機構，現為全職圖文創作者。</p>
+          <br />
           <p>Judy擅長色彩鮮明、可愛療癒的畫風，注重作品的通俗性、趣味性以及讀者的互動性。</p>
           <p>曾發行實體繪本《普迪好忙》以及數位著色本《ㄅㄆㄇ在跳舞》及《快樂字母ABC》。</p>
           <p>《普迪好忙》曾入圍2020年亞洲插畫年度大賞。</p>
@@ -151,20 +152,6 @@
             </template>
           </q-input>
           <p>訂閱我們的電子報，獲取最新消息。</p>
-          <div class="footer-social-links">
-            <q-btn
-              v-for="social in SocialLinks"
-              :key="social.name"
-              :href="social.url"
-              target="_blank"
-              flat
-              round
-              :icon="social.icon"
-              size="md"
-              color="white"
-              :aria-label="`追蹤我們的 ${social.name}`"
-            />
-          </div>
         </div>
         <!-- 作品導覽 -->
         <div class="col-12 col-sm-3">
@@ -181,13 +168,11 @@
           <q-img src="~assets/logo.png" />
         </div>
       </div>
-      <div class="row justify-center">© 2023 Judy. All rights reserved.</div>
-      <div class="row justify-center">Site by BobKuo</div>
     </div>
   </q-page>
 </template>
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -205,14 +190,6 @@ const layout = computed(() => {
 const newsletter = reactive({
   email: '',
 })
-
-// Footer 社群媒體連結
-const SocialLinks = ref([
-  { name: 'Instagram', icon: 'fab fa-instagram', url: 'https://instagram.com' },
-  { name: 'Pinterest', icon: 'fab fa-pinterest', url: 'https://pinterest.com' },
-  { name: 'TikTok', icon: 'fab fa-tiktok', url: 'https://tiktok.com' },
-  { name: 'Facebook', icon: 'fab fa-facebook-f', url: 'https://facebook.com' },
-])
 
 // 使用 gsap.context() 管理動畫
 let ctx
@@ -294,12 +271,6 @@ onUnmounted(() => {
 } */
 .about-description {
   font-family: 'Sora', sans-serif;
-}
-
-.footer-social-links {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
 }
 
 .timeline-image {

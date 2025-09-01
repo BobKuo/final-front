@@ -1,12 +1,6 @@
 <template>
   <q-layout view="hHr lpr ffr">
-    <q-header
-      v-model="headerVisible"
-      reveal
-      @reveal="onHeaderReveal"
-      class="main-header bg-judy-1"
-      height-hint="80"
-    >
+    <q-header bordered class="main-header bg-judy-1" height-hint="80">
       <q-toolbar class="q-pl-xs toolbar-content">
         <!-- Logo 區域 -->
         <q-toolbar-title class="logo-section">
@@ -74,20 +68,6 @@
 
     <q-page-container>
       <router-view :key="$route.fullPath" />
-
-      <!-- Header 切換按鈕 -->
-      <q-page-sticky position="top" class="header-toggle">
-        <q-btn
-          @click="toggleHeader"
-          flat
-          round
-          dense
-          color="black"
-          icon="arrow_drop_down"
-          class="toggle-btn"
-        />
-      </q-page-sticky>
-
       <!-- 購物車浮動按鈕 -->
       <q-page-sticky
         v-if="$route.path === '/shopping' || $route.path.startsWith('/product')"
@@ -111,6 +91,30 @@
         </q-btn>
       </q-page-sticky>
     </q-page-container>
+    <!-- footer -->
+    <q-footer class="bg-judy-2 text-black">
+      <q-toolbar>
+        <div class="absolute-top-left">
+          <q-btn
+            v-for="social in SocialLinks"
+            :key="social.name"
+            :href="social.url"
+            target="_blank"
+            flat
+            round
+            :icon="social.icon"
+            size="md"
+            color="white"
+            :aria-label="`追蹤我們的 ${social.name}`"
+          />
+        </div>
+
+        <q-toolbar-title class="text-subtitle2 text-center">
+          <div>© 2023 Judy. All rights reserved</div>
+          <div>Site by BobKuo</div>
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -126,7 +130,6 @@ const userStore = useUserStore()
 
 const rightDrawerOpen = ref(false)
 const showRegister = ref(false) // 是否顯示註冊表單
-const headerVisible = ref(true)
 
 //
 const navItems = computed(() => [
@@ -151,17 +154,6 @@ const toggleRegister = () => {
   showRegister.value = !showRegister.value
 }
 
-// 顯示頁首
-const toggleHeader = () => {
-  headerVisible.value = !headerVisible.value
-}
-
-//
-const onHeaderReveal = (value) => {
-  // console.log(value ? '🔼 Header 出現（reveal）' : '🔽 Header 被收起（hide）')
-  headerVisible.value = value
-}
-
 // 購物車
 const fabPos = ref([50, 18])
 const draggingFab = ref(false)
@@ -171,14 +163,22 @@ const moveFab = (event) => {
   fabPos.value = [fabPos.value[0] - event.delta.x, fabPos.value[1] + event.delta.y]
   // fabPos.value = [fabPos.value[0] - event.delta.x, fabPos.value[1] - event.delta.y]
 }
+
+// Footer 社群媒體連結
+const SocialLinks = ref([
+  { name: 'Instagram', icon: 'fab fa-instagram', url: 'https://www.instagram.com/judywang.art/' },
+  { name: 'Pinterest', icon: 'fab fa-pinterest', url: 'https://pinterest.com' },
+  { name: 'TikTok', icon: 'fab fa-tiktok', url: 'https://tiktok.com' },
+  { name: 'Facebook', icon: 'fab fa-facebook-f', url: 'https://www.facebook.com/judywangswork/' },
+])
 </script>
 <style scoped>
 /* 主要 Header 樣式 */
-.main-header {
-  border-bottom: 2px solid rgba(235, 140, 111, 0.3);
+/* .main-header {
+  border-bottom: 1px solid rgba(235, 140, 111, 0.3);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(8px);
-}
+} */
 
 /* .toolbar-content {
   min-height: 80px;
