@@ -540,7 +540,7 @@ onUnmounted(() => {
   // top: 0;
   // bottom: 0;
   // top: var(--q-header-height); /* 避開 q-header */
-  height: calc(100vh - 100px); /* 計算實際可用高度 */
+  height: calc(100vh - 50px); /* 計算實際可用高度 */
   left: 0;
   right: 0;
   z-index: 2;
