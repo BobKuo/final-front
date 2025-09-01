@@ -1,0 +1,1 @@
+import{b4 as r}from"./index-BkDhb2od.js";const o={create(t){return r.apiAuth.post("/work/add",t)},getAll(){return r.apiAuth.get("/work/all")},get(){return r.api.get("/work")},getId(t){return r.api.get("/work/"+t)},update(t,e){return r.apiAuth.patch(`/work/${t}`,e)},getList(t){return r.apiAuth.post("/work/list",{series_id:t})}};export{o as w};
