@@ -167,8 +167,8 @@ const moveFab = (event) => {
 // Footer 社群媒體連結
 const SocialLinks = ref([
   { name: 'Instagram', icon: 'fab fa-instagram', url: 'https://www.instagram.com/judywang.art/' },
-  { name: 'Pinterest', icon: 'fab fa-pinterest', url: 'https://pinterest.com' },
-  { name: 'TikTok', icon: 'fab fa-tiktok', url: 'https://tiktok.com' },
+  { name: 'Threads', icon: 'fab fa-threads', url: 'https://www.threads.com/@judywang.art/' },
+  { name: 'TikTok', icon: 'fab fa-tiktok', url: 'https://www.tiktok.com/@judywang_art/' },
   { name: 'Facebook', icon: 'fab fa-facebook-f', url: 'https://www.facebook.com/judywangswork/' },
 ])
 </script>

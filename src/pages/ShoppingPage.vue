@@ -18,7 +18,7 @@
               :key="category"
               :label="category"
               outline
-              color="primary"
+              color="judy-4"
               v-model:selected="categoryOptions[category]"
               @update:selected="
                 (selected) => {
@@ -29,13 +29,7 @@
           </div>
           <!-- 右側的 q-btn -->
           <div class="col-auto">
-            <q-btn
-              color="primary"
-              flat
-              icon-right="arrow_drop_down"
-              :ripple="false"
-              class="q-ml-sm"
-            >
+            <q-btn color="judy-4" flat icon-right="arrow_drop_down" :ripple="false" class="q-ml-sm">
               {{ sortOptions[selectedSort].text }}
               <q-menu transition-show="jump-down" transition-hide="jump-up">
                 <q-list style="min-width: 100px">
@@ -57,7 +51,7 @@
     </div>
     <div class="row">
       <div
-        class="col-12 col-sm-6 col-md-4 col-lg-3 q-pa-sm"
+        class="col-12 col-sm-6 col-md-4 col-lg-3 q-pa-sm bg-grey-2"
         v-for="product in currentPageProducts"
         :key="product.id"
       >
@@ -65,7 +59,7 @@
       </div>
     </div>
     <div class="row justify-center bg-grey-2 q-pa-md">
-      <q-pagination v-model="currentPage" :max="totalPages" color="primary" boundary-links />
+      <q-pagination v-model="currentPage" :max="totalPages" color="judy-4" boundary-links />
     </div>
   </q-page>
 </template>
