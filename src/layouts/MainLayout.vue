@@ -110,7 +110,7 @@
         </div>
 
         <q-toolbar-title class="text-subtitle2 text-center">
-          <div>© 2023 Judy. All rights reserved</div>
+          <div>© 2025 Judy. All rights reserved</div>
           <div>Site by BobKuo</div>
         </q-toolbar-title>
       </q-toolbar>
