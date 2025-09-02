@@ -31,7 +31,7 @@
             </div>
             <div class="col-4">
               <div class="row justify-end">
-                <q-btn flat round color="red" icon="favorite">
+                <q-btn flat round color="red" icon="favorite" @click="toggleFavorite">
                   <q-tooltip>加入收藏</q-tooltip></q-btn
                 >
                 <q-btn flat round color="teal" icon="bookmark"><q-tooltip>書籤</q-tooltip></q-btn>
@@ -78,8 +78,11 @@
 import { ref } from 'vue'
 import { gsap } from 'gsap'
 import { useQuasar } from 'quasar'
+import userService from 'src/services/user'
+import { useUserStore } from 'src/stores/user'
 
 const $q = useQuasar()
+const userStore = useUserStore()
 
 const props = defineProps({
   project: {
@@ -138,26 +141,28 @@ const shareProject = async () => {
 
 // 顯示分享選項對話框
 const showShareDialog = (shareUrl) => {
-  const shareText = `來看看 Judy 的作品：${props.project.title}`
+  // const shareText = `來看看 Judy 的作品：${props.project.title}`
 
-  $q.dialog({
-    title: '分享作品',
-    message: '選擇分享方式',
-    options: {
-      type: 'radio',
-      model: 'copy',
-      items: [
-        { label: '複製連結', value: 'copy', icon: 'content_copy' },
-        { label: '分享到 Facebook', value: 'facebook', icon: 'facebook' },
-        { label: '分享到 LINE', value: 'line', icon: 'chat' },
-      ],
-    },
-    ok: '分享',
-    cancel: '取消',
-    persistent: true,
-  }).onOk((shareMethod) => {
-    handleShare(shareMethod, shareUrl, shareText)
-  })
+  // $q.dialog({
+  //   title: '分享作品',
+  //   message: '選擇分享方式',
+  //   options: {
+  //     type: 'radio',
+  //     model: 'copy',
+  //     items: [
+  //       { label: '複製連結', value: 'copy', icon: 'content_copy' },
+  //       { label: '分享到 Facebook', value: 'facebook', icon: 'facebook' },
+  //       { label: '分享到 LINE', value: 'line', icon: 'chat' },
+  //     ],
+  //   },
+  //   ok: '分享',
+  //   cancel: '取消',
+  //   persistent: true,
+  // }).onOk((shareMethod) => {
+  //   handleShare(shareMethod, shareUrl, shareText)
+  // })
+
+  handleShare('copy', shareUrl)
 }
 
 // 🔧 現代化的複製到剪貼簿函數
@@ -267,6 +272,34 @@ const handleMouseLeave = (event) => {
 
   // gsap.to(image, { scale: 1, duration: 0.6, ease: 'power2.out' })
   gsap.to(content, { y: 0, duration: 0.3 })
+}
+
+// 加入收藏
+const toggleFavorite = async () => {
+  if (!userStore.isLoggedIn) {
+    $q.dialog({
+      title: '需要登入',
+      message: '請先登入帳號才能加入收藏',
+    })
+    return
+  }
+
+  try {
+    await userService.favorites({
+      work: props.project.id,
+    })
+
+    $q.notify({
+      type: 'positive',
+      message: '已加入收藏',
+    })
+  } catch (error) {
+    console.error('Error fetching products:', error)
+    $q.notify({
+      type: 'negative',
+      message: '無法加入收藏，請稍後再試',
+    })
+  }
 }
 </script>
 

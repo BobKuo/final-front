@@ -305,11 +305,6 @@ const SocialLinks = ref([
   overflow-y: auto;
 }
 
-/* Header 切換按鈕 */
-.header-toggle {
-  z-index: 2000;
-}
-
 .toggle-btn {
   margin: 8px;
   background-color: rgba(170, 170, 170, 0.1);

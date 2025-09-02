@@ -22,4 +22,10 @@ export default {
   getCart() {
     return apiService.apiAuth.get('/user/cart')
   },
+  favorites(data) {
+    return apiService.apiAuth.patch('/user/favorites', data)
+  },
+  getFavorites() {
+    return apiService.apiAuth.get('/user/favorites')
+  },
 }

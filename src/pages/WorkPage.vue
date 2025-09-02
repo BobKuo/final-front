@@ -58,11 +58,7 @@
             :id="`project-${work._id}`"
             class="project-section"
           >
-            <WorkCard
-              :project="transformWorkToProject(work)"
-              :is-reverse="index % 2 === 1"
-              @view-project="handleViewProject"
-            />
+            <WorkCard :project="transformWorkToProject(work)" :is-reverse="index % 2 === 1" />
           </div>
         </div>
 
@@ -127,13 +123,12 @@ const transformWorkToProject = (work) => {
     description: work.content || '暫無描述',
     image: work.images?.[0] || 'https://via.placeholder.com/600x400?text=No+Image', // 使用第一張圖片
     tags: work.tags || [],
+    statistics: work.statistics || {},
   }
 }
 
 // 🔗 處理錨點滾動到指定作品
 const handleAnchorScroll = async () => {
-  await nextTick()
-
   const hash = route.hash
   if (hash && hash.startsWith('#project-')) {
     // 提取作品 ID
@@ -143,21 +138,14 @@ const handleAnchorScroll = async () => {
     const targetWork = allWorks.value.find((work) => work._id === projectId)
 
     if (targetWork) {
-      // 如果當前系列不是目標作品的系列，切換系列
-      if (slide.value !== targetWork.category) {
-        slide.value = targetWork.category
+      // 直接切換到目標系列（在渲染前完成）
+      slide.value = targetWork.category
 
-        // 等待系列切換完成後再滾動
-        await nextTick()
-        setTimeout(() => {
-          scrollToProject(projectId, targetWork)
-        }, 500) // 給 carousel 切換時間
-      } else {
-        // 如果已經在正確的系列，直接滾動
-        setTimeout(() => {
-          scrollToProject(projectId, targetWork)
-        }, 300)
-      }
+      // 等待 DOM 更新完成後再滾動
+      await nextTick()
+      setTimeout(() => {
+        scrollToProject(projectId, targetWork)
+      }, 300)
     } else {
       // 找不到作品
       $q.notify({
@@ -176,11 +164,24 @@ const scrollToProject = (projectId, work) => {
   const targetElement = document.getElementById(`project-${projectId}`)
 
   if (targetElement) {
-    // 計算滾動位置（考慮 header 和 carousel 高度）
-    const headerHeight = 100 // 根據您的 header 高度調整
-    const carouselHeight = 400 // 根據您的 carousel 高度調整
-    const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset
-    const offsetPosition = elementPosition - headerHeight - carouselHeight
+    // 計算元素的中心點位置
+    const elementRect = targetElement.getBoundingClientRect()
+    const elementHeight = elementRect.height
+    const viewportHeight = window.innerHeight
+
+    // 計算滾動位置（考慮 header）
+    const headerHeight = 50 // 根據您的 header 高度調整, q-header預設為50px
+
+    // 計算元素在頁面中的絕對位置
+    const elementPosition = elementRect.top + window.pageYOffset
+
+    // 計算讓元素中心在畫面中心的滾動位置
+    const offsetPosition = elementPosition - headerHeight - viewportHeight / 2 + elementHeight / 2
+
+    // console.log('滾動到作品:', projectId)
+    // console.log('元素高度:', elementHeight)
+    // console.log('視窗高度:', viewportHeight)
+    // console.log('目標滾動位置:', offsetPosition)
 
     // 平滑滾動到目標位置
     window.scrollTo({
@@ -189,7 +190,7 @@ const scrollToProject = (projectId, work) => {
     })
 
     // 添加高亮效果
-    highlightProject(targetElement)
+    // highlightProject(targetElement)
 
     // 顯示通知
     $q.notify({
@@ -210,15 +211,15 @@ const scrollToProject = (projectId, work) => {
 }
 
 // ✨ 高亮作品效果
-const highlightProject = (element) => {
-  // 添加高亮 class
-  element.classList.add('highlighted')
+// const highlightProject = (element) => {
+//   // 添加高亮 class
+//   element.classList.add('highlighted')
 
-  // 3 秒後移除高亮效果
-  setTimeout(() => {
-    element.classList.remove('highlighted')
-  }, 3000)
-}
+//   // 3 秒後移除高亮效果
+//   setTimeout(() => {
+//     element.classList.remove('highlighted')
+//   }, 3000)
+// }
 
 // 🔍 根據作品 ID 查找所屬系列
 // const findSeriesByWorkId = (workId) => {
@@ -340,10 +341,15 @@ onMounted(async () => {
   await getSeries()
   await getWorks()
 
-  // 延遲處理錨點，確保所有資料都已載入
-  setTimeout(() => {
+  // 在渲染前處理錨點切換
+  if (route.hash && route.hash.startsWith('#project-')) {
     handleAnchorScroll()
-  }, 1000)
+  } else {
+    // 如果沒有錨點，設定預設的第一個系列
+    if (allSeries.value.length > 0) {
+      slide.value = allSeries.value[0]._id
+    }
+  }
 
   // 滾動觸發動畫
   // gsap.fromTo(
@@ -386,11 +392,11 @@ onMounted(async () => {
   // })
 })
 
-const handleViewProject = (project) => {
-  console.log('View project:', project)
-  // 這裡可以添加導航到項目詳情頁的邏輯
-  // 例如: router.push(`/projects/${project.id}`)
-}
+// const handleViewProject = (project) => {
+//   console.log('View project:', project)
+//   // 這裡可以添加導航到項目詳情頁的邏輯
+//   // 例如: router.push(`/projects/${project.id}`)
+// }
 </script>
 
 <style scoped lang="scss">
@@ -468,82 +474,82 @@ const handleViewProject = (project) => {
 // 🎯 作品區塊樣式
 .project-section {
   margin-bottom: 80px;
-  scroll-margin-top: 500px; /* 為 header 和 carousel 預留空間 */
+  scroll-margin-top: 50px; /* 為 header 和 carousel 預留空間 */
   transition: all 0.3s ease;
 }
 
 /* ✨ 高亮效果動畫 */
-.project-section.highlighted {
-  animation: highlight 3s ease-in-out;
-  border-radius: 20px;
-  padding: 20px;
-  margin: 20px 0;
-}
+// .project-section.highlighted {
+//   animation: highlight 3s ease-in-out;
+//   border-radius: 20px;
+//   padding: 20px;
+//   margin: 20px 0;
+// }
 
-@keyframes highlight {
-  0% {
-    background-color: transparent;
-    transform: scale(1);
-  }
-  25% {
-    background-color: rgba(235, 140, 111, 0.15);
-    transform: scale(1.02);
-    box-shadow: 0 10px 30px rgba(235, 140, 111, 0.2);
-  }
-  50% {
-    background-color: rgba(235, 140, 111, 0.1);
-    transform: scale(1.01);
-    box-shadow: 0 8px 25px rgba(235, 140, 111, 0.15);
-  }
-  75% {
-    background-color: rgba(235, 140, 111, 0.05);
-    transform: scale(1.005);
-    box-shadow: 0 5px 15px rgba(235, 140, 111, 0.1);
-  }
-  100% {
-    background-color: transparent;
-    transform: scale(1);
-    box-shadow: none;
-  }
-}
+// @keyframes highlight {
+//   0% {
+//     background-color: transparent;
+//     transform: scale(1);
+//   }
+//   25% {
+//     background-color: rgba(235, 140, 111, 0.15);
+//     transform: scale(1.02);
+//     box-shadow: 0 10px 30px rgba(235, 140, 111, 0.2);
+//   }
+//   50% {
+//     background-color: rgba(235, 140, 111, 0.1);
+//     transform: scale(1.01);
+//     box-shadow: 0 8px 25px rgba(235, 140, 111, 0.15);
+//   }
+//   75% {
+//     background-color: rgba(235, 140, 111, 0.05);
+//     transform: scale(1.005);
+//     box-shadow: 0 5px 15px rgba(235, 140, 111, 0.1);
+//   }
+//   100% {
+//     background-color: transparent;
+//     transform: scale(1);
+//     box-shadow: none;
+//   }
+// }
 
-/* 🎯 為分享連結訪問者添加特殊樣式 */
-.project-section:target {
-  animation: highlight 3s ease-in-out;
-}
+// /* 🎯 為分享連結訪問者添加特殊樣式 */
+// .project-section:target {
+//   animation: highlight 3s ease-in-out;
+// }
 
-/* 📱 載入動畫 */
-.project-section {
-  opacity: 0;
-  animation: fadeInUp 0.6s ease-out forwards;
-}
+// /* 📱 載入動畫 */
+// .project-section {
+//   opacity: 0;
+//   animation: fadeInUp 0.6s ease-out forwards;
+// }
 
-.project-section:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.project-section:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.project-section:nth-child(3) {
-  animation-delay: 0.3s;
-}
-.project-section:nth-child(4) {
-  animation-delay: 0.4s;
-}
-.project-section:nth-child(5) {
-  animation-delay: 0.5s;
-}
+// .project-section:nth-child(1) {
+//   animation-delay: 0.1s;
+// }
+// .project-section:nth-child(2) {
+//   animation-delay: 0.2s;
+// }
+// .project-section:nth-child(3) {
+//   animation-delay: 0.3s;
+// }
+// .project-section:nth-child(4) {
+//   animation-delay: 0.4s;
+// }
+// .project-section:nth-child(5) {
+//   animation-delay: 0.5s;
+// }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+// @keyframes fadeInUp {
+//   from {
+//     opacity: 0;
+//     transform: translateY(30px);
+//   }
+//   to {
+//     opacity: 1;
+//     transform: translateY(0);
+//   }
+// }
 
 // 響應式設計
 @media (max-width: 1024px) {
