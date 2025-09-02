@@ -2,12 +2,12 @@
   <q-page>
     <div class="row justify-center text-center q-mb-lg">
       <div class="col-4">
-        <q-img src="~assets/logo.png" />
+        <q-img src="~assets/about.png" />
       </div>
       <div class="col-12 q-gutter-lg">
         <div class="text-h2 intro_title">I'm Judy</div>
-        <div class="text-h6 about-description">
-          <p>Judy Wang，本名王君儀，台灣台北人。</p>
+        <div class="text-h6 font-sora">
+          <p>Judy Wang，台灣台北人。</p>
           <p>臺師大大傳所畢業，曾任職中央社、奧美公關、痞客邦等傳播機構，現為全職圖文創作者。</p>
           <br />
           <p>Judy擅長色彩鮮明、可愛療癒的畫風，注重作品的通俗性、趣味性以及讀者的互動性。</p>
@@ -16,17 +16,148 @@
         </div>
       </div>
     </div>
-    <!-- 主題描述區域 -->
-    <div class="row q-pa-md q-gutter-md text-center">
-      <div class="col">
-        <div>
-          <q-img src="https://picsum.photos/300/200/?random=1" />
-        </div>
+    <!-- 主題描述區域1 -->
+    <div class="row q-pa-md q-mx-xl q-mb-md q-gutter-md text-center font-sora">
+      <div class="col flex justify-end">
+        <q-img
+          src="https://res.cloudinary.com/dm5rlvzns/image/upload/v1756817454/%E9%97%9C%E6%96%BC%E6%88%91_%E5%B1%95%E8%A6%BD%E7%B6%93%E6%AD%B7_%E5%88%86%E9%A1%9E%E5%B0%81%E9%9D%A2_ju8kyp.png"
+          fit="contain"
+          width="100%"
+        />
       </div>
       <div class="col">
-        <div>
-          <h3>個人經歷與背景</h3>
-          <p>這是個人經歷與背景的描述。</p>
+        <div class="q-px-xl">
+          <h3 class="text-left">個人經歷/展覽</h3>
+          <div class="row justify-start">
+            <div class="text-h6 text-left text-grey-9">
+              <p>
+                2020/2019 味全文教基金會藝術講師<br />
+                2019 台灣繪本協會行動師資<br />
+                2019 蘭陽繪本創作營<br />
+                2019 繪本創作個展-普迪好忙原畫展<br />
+                2019 繪本創作聯展-繪本下午茶<br />
+                2018 陳璐茜繪本創作師資班25期學員<br />
+                2018 學好教育機構藝術老師
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <q-separator></q-separator>
+    <!-- 時間軸區域 -->
+    <div class="q-px-xl q-py-md fade-in-section" data-section="timeline">
+      <q-timeline :layout="layout" color="secondary">
+        <q-timeline-entry heading> 著作歷程 </q-timeline-entry>
+
+        <q-timeline-entry
+          title="繪本《小畫家與大畫家》（雙人創作／獨立出版）"
+          subtitle="October, 2021"
+          side="left"
+          class="timeline-item"
+        >
+          <img
+            class="timeline-image"
+            src="https://res.cloudinary.com/dm5rlvzns/image/upload/v1756817464/%E9%97%9C%E6%96%BC%E6%88%91_%E8%91%97%E4%BD%9C_2021%E7%B9%AA%E6%9C%AC_%E5%B0%8F%E7%95%AB%E5%AE%B6%E8%88%87%E5%A4%A7%E7%95%AB%E5%AE%B6_%E6%9B%B8%E7%B1%8D%E5%B0%81%E9%9D%A2_y5hv47.jpg"
+          />
+          <!-- <div>這邊可以放簡述</div> -->
+        </q-timeline-entry>
+
+        <q-timeline-entry
+          title="著色本《ㄅㄆㄇ在跳舞》（個人創作／網路出版）"
+          subtitle="July, 2020"
+          side="right"
+          icon="book"
+          class="timeline-item"
+        >
+          <img
+            class="timeline-image"
+            src="https://res.cloudinary.com/dm5rlvzns/image/upload/v1756817464/%E9%97%9C%E6%96%BC%E6%88%91_%E8%91%97%E4%BD%9C_2020%E8%91%97%E8%89%B2%E6%9C%AC_%E6%B3%A8%E9%9F%B3_%E4%B8%8A%E8%89%B2%E7%A4%BA%E7%AF%84_mzsxoa.jpg"
+          />
+          <!-- <div>這邊可以放簡述</div> -->
+        </q-timeline-entry>
+
+        <!-- <q-timeline-entry heading>November, 2017</q-timeline-entry> -->
+
+        <q-timeline-entry
+          title="著色本《快樂字母》（個人創作／網路出版）"
+          subtitle="April, 2020"
+          side="left"
+          class="timeline-item"
+        >
+          <img
+            class="timeline-image"
+            src="https://res.cloudinary.com/dm5rlvzns/image/upload/v1756817462/%E9%97%9C%E6%96%BC%E6%88%91_%E8%91%97%E4%BD%9C_2020%E8%91%97%E8%89%B2%E6%9C%AC_%E5%AD%97%E6%AF%8D_%E4%B8%8A%E8%89%B2%E7%A4%BA%E7%AF%84_xvnd7w.jpg"
+          />
+          <!-- <div>這邊可以放簡述</div> -->
+        </q-timeline-entry>
+
+        <q-timeline-entry
+          title="繪本《最愛的禮物》（團體創作／小魯文化出版）"
+          subtitle="November, 2019"
+          side="right"
+          color="orange"
+          icon="done_all"
+          class="timeline-item"
+        >
+          <img
+            class="timeline-image"
+            src="https://res.cloudinary.com/dm5rlvzns/image/upload/v1756817453/%E9%97%9C%E6%96%BC%E6%88%91_%E8%91%97%E4%BD%9C_2019%E7%B9%AA%E6%9C%AC_%E6%9C%80%E6%84%9B%E7%9A%84%E7%A6%AE%E7%89%A9_%E6%9B%B8%E7%B1%8D%E5%B0%81%E9%9D%A2_ioreeh.png"
+          />
+          <!-- <div>
+            導航手裡部落前往贏得教師這次性感在那裡大幅本帖基本，金融一遍看到合理上一頁魅力字元不良水溝信箱貫徹格式現象出口，投資者上市陷入科技完全整理，翻譯過程多麼資訊而來心裡玻璃優秀為何掌握，姐姐發佈真是內地意義版權所有，友情連結來自東西，親自相機，屏幕變化，左右。
+          </div> -->
+        </q-timeline-entry>
+
+        <q-timeline-entry
+          title="繪本《普迪好忙》（個人創作／獨立出版）"
+          subtitle="June, 2019"
+          side="left"
+          class="timeline-item"
+        >
+          <img
+            class="timeline-image"
+            src="https://res.cloudinary.com/dm5rlvzns/image/upload/v1756817458/%E9%97%9C%E6%96%BC%E6%88%91_%E8%91%97%E4%BD%9C_2019%E7%B9%AA%E6%9C%AC_%E6%99%AE%E8%BF%AA%E5%A5%BD%E5%BF%99_%E6%9B%B8%E7%B1%8D%E5%B0%81%E9%9D%A2_loeasf.jpg"
+          />
+          <div>
+            註：普迪好忙販售於三民網路書店
+            <a href="https://tinyurl.com/y8fc8zx3" target="_blank">點此購買</a>
+          </div>
+        </q-timeline-entry>
+
+        <q-timeline-entry title="" subtitle="START" side="left" class="timeline-item">
+        </q-timeline-entry>
+      </q-timeline>
+    </div>
+
+    <q-separator></q-separator>
+
+    <!-- 主題描述區域2 -->
+    <div class="row q-pa-md q-mx-xl q-gutter-md text-center font-sora">
+      <div class="col flex justify-end">
+        <q-img
+          src="https://res.cloudinary.com/dm5rlvzns/image/upload/v1756817454/%E9%97%9C%E6%96%BC%E6%88%91_%E5%B1%95%E8%A6%BD%E7%B6%93%E6%AD%B7_%E5%88%86%E9%A1%9E%E5%B0%81%E9%9D%A2_ju8kyp.png"
+          fit="contain"
+          width="100%"
+        />
+      </div>
+      <div class="col">
+        <div class="q-px-xl">
+          <h3 class="text-left">個人經歷/展覽</h3>
+          <div class="row justify-start">
+            <div class="text-h6 text-left text-grey-9">
+              <p>
+                2020/2019 味全文教基金會藝術講師<br />
+                2019 台灣繪本協會行動師資<br />
+                2019 蘭陽繪本創作營<br />
+                2019 繪本創作個展-普迪好忙原畫展<br />
+                2019 繪本創作聯展-繪本下午茶<br />
+                2018 陳璐茜繪本創作師資班25期學員<br />
+                2018 學好教育機構藝術老師
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -42,91 +173,6 @@
           <q-img src="https://picsum.photos/300/200/?random=2" />
         </div>
       </div>
-    </div>
-    <!-- 時間軸區域 -->
-    <div class="q-px-xl q-py-md fade-in-section" data-section="timeline">
-      <q-timeline :layout="layout" color="secondary">
-        <q-timeline-entry heading> 作品時程演進 </q-timeline-entry>
-
-        <q-timeline-entry
-          title="幾何動物系列"
-          subtitle="February 22, 1986"
-          side="left"
-          class="timeline-item"
-        >
-          <img
-            class="timeline-image"
-            src="https://res.cloudinary.com/dm5rlvzns/image/upload/v1756628360/works/lckwgyes3c1roihkrscq.png"
-          />
-          <div>
-            導航手裡部落前往贏得教師這次性感在那裡大幅本帖基本，金融一遍看到合理上一頁魅力字元不良水溝信箱貫徹格式現象出口，投資者上市陷入科技完全整理，翻譯過程多麼資訊而來心裡玻璃優秀為何掌握，姐姐發佈真是內地意義版權所有，友情連結來自東西，親自相機，屏幕變化，左右。
-          </div>
-        </q-timeline-entry>
-
-        <q-timeline-entry
-          title="動物喝茶系列"
-          subtitle="February 21, 1986"
-          side="right"
-          icon="delete"
-          class="timeline-item"
-        >
-          <div>
-            導航手裡部落前往贏得教師這次性感在那裡大幅本帖基本，金融一遍看到合理上一頁魅力字元不良水溝信箱貫徹格式現象出口，投資者上市陷入科技完全整理，翻譯過程多麼資訊而來心裡玻璃優秀為何掌握，姐姐發佈真是內地意義版權所有，友情連結來自東西，親自相機，屏幕變化，左右。
-          </div>
-        </q-timeline-entry>
-
-        <q-timeline-entry heading>November, 2017</q-timeline-entry>
-
-        <q-timeline-entry
-          title="注音符號系列"
-          subtitle="February 22, 1986"
-          side="left"
-          class="timeline-item"
-        >
-          <div>
-            導航手裡部落前往贏得教師這次性感在那裡大幅本帖基本，金融一遍看到合理上一頁魅力字元不良水溝信箱貫徹格式現象出口，投資者上市陷入科技完全整理，翻譯過程多麼資訊而來心裡玻璃優秀為何掌握，姐姐發佈真是內地意義版權所有，友情連結來自東西，親自相機，屏幕變化，左右。
-          </div>
-        </q-timeline-entry>
-
-        <q-timeline-entry
-          title="普迪系列"
-          subtitle="February 22, 1986"
-          side="right"
-          color="orange"
-          icon="done_all"
-          class="timeline-item"
-        >
-          <img
-            class="timeline-image"
-            src="https://res.cloudinary.com/dm5rlvzns/image/upload/v1755797776/works/ace181st4hot8cookfmh.jpg"
-          />
-          <div>
-            導航手裡部落前往贏得教師這次性感在那裡大幅本帖基本，金融一遍看到合理上一頁魅力字元不良水溝信箱貫徹格式現象出口，投資者上市陷入科技完全整理，翻譯過程多麼資訊而來心裡玻璃優秀為何掌握，姐姐發佈真是內地意義版權所有，友情連結來自東西，親自相機，屏幕變化，左右。
-          </div>
-        </q-timeline-entry>
-
-        <q-timeline-entry
-          title="白日夢系列"
-          subtitle="February 22, 1986"
-          side="left"
-          class="timeline-item"
-        >
-          <div>
-            導航手裡部落前往贏得教師這次性感在那裡大幅本帖基本，金融一遍看到合理上一頁魅力字元不良水溝信箱貫徹格式現象出口，投資者上市陷入科技完全整理，翻譯過程多麼資訊而來心裡玻璃優秀為何掌握，姐姐發佈真是內地意義版權所有，友情連結來自東西，親自相機，屏幕變化，左右。
-          </div>
-        </q-timeline-entry>
-
-        <q-timeline-entry
-          title="生活雜記系列"
-          subtitle="February 22, 1986"
-          side="left"
-          class="timeline-item"
-        >
-          <div>
-            導航手裡部落前往贏得教師這次性感在那裡大幅本帖基本，金融一遍看到合理上一頁魅力字元不良水溝信箱貫徹格式現象出口，投資者上市陷入科技完全整理，翻譯過程多麼資訊而來心裡玻璃優秀為何掌握，姐姐發佈真是內地意義版權所有，友情連結來自東西，親自相機，屏幕變化，左右。
-          </div>
-        </q-timeline-entry>
-      </q-timeline>
     </div>
 
     <!-- Footer 區域 -->
@@ -200,7 +246,7 @@ onMounted(() => {
     // 設定所有區塊的初始狀態（隱藏）
     gsap.set('.fade-in-section', {
       opacity: 0,
-      y: 300,
+      y: 100,
     })
     gsap.set('.timeline-item', {
       opacity: 0,
@@ -217,7 +263,7 @@ onMounted(() => {
           trigger: section,
           start: 'top 80%', // 當區塊頂部到達視窗 80% 位置時觸發
           end: 'bottom 20%',
-          toggleActions: 'play none none reverse', // 進入時播放，離開時反轉
+          toggleActions: 'play none none none', // 進入時播放，離開時反轉
           // markers: true, // 開發時可以開啟來看觸發點
         },
         delay: index * 0.1, // 每個區塊延遲 0.1 秒，創造連續效果
@@ -239,9 +285,9 @@ onMounted(() => {
           ease: 'power2.out',
           scrollTrigger: {
             trigger: item,
-            start: 'top 85%',
-            end: 'bottom 15%',
-            toggleActions: 'play none none reverse',
+            start: 'top 100%',
+            end: 'bottom 0%',
+            toggleActions: 'play none none none',
             // markers: true, // 開發時可以開啟來看觸發點
           },
           delay: index * 0.2,
@@ -269,7 +315,8 @@ onUnmounted(() => {
 /* .footer-section {
   background-color: var(--judy-2);
 } */
-.about-description {
+
+.font-sora {
   font-family: 'Sora', sans-serif;
 }
 
