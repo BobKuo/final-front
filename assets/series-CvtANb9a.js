@@ -1,0 +1,1 @@
+import{b7 as r}from"./index-CWWtOGS4.js";const i={create(e){return r.apiAuth.post("/series/add",e)},getAll(){return r.apiAuth.get("/series/all")},get(){return r.api.get("/series")},getId(e){return r.api.get("/series/"+e)},update(e,t){return r.apiAuth.patch(`/series/${e}`,t)}};export{i as s};
