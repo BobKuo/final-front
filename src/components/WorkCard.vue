@@ -29,11 +29,15 @@
                 </q-chip>
               </div>
             </div>
-            <div class="col-3">
+            <div class="col-4">
               <div class="row justify-end">
-                <q-btn flat round color="red" icon="favorite"></q-btn>
-                <q-btn flat round color="teal" icon="bookmark"></q-btn>
-                <q-btn flat round color="primary" icon="share"></q-btn>
+                <q-btn flat round color="red" icon="favorite">
+                  <q-tooltip>加入收藏</q-tooltip></q-btn
+                >
+                <q-btn flat round color="teal" icon="bookmark"><q-tooltip>書籤</q-tooltip></q-btn>
+                <q-btn flat round color="primary" icon="share" @click="shareProject">
+                  <q-tooltip>分享作品</q-tooltip>
+                </q-btn>
               </div>
             </div>
           </div>
@@ -45,7 +49,7 @@
       <div class="project-category">－{{ project.category }}</div>
       <h3 class="project-title">{{ project.title }}</h3>
       <p class="project-description">{{ project.description }}</p>
-      <button class="project-link" @click="$emit('view-project', project)">
+      <button class="project-link" @click="openImageDialog">
         <span>放大看作品</span>
         <svg class="arrow-icon" viewBox="0 0 24 24">
           <path d="M5 12h14M12 5l7 7-7 7" />
@@ -73,8 +77,11 @@
 <script setup>
 import { ref } from 'vue'
 import { gsap } from 'gsap'
+import { useQuasar } from 'quasar'
 
-defineProps({
+const $q = useQuasar()
+
+const props = defineProps({
   project: {
     type: Object,
     required: true,
@@ -96,8 +103,6 @@ defineProps({
   },
 })
 
-defineEmits(['view-project'])
-
 // 圖片對話框狀態
 const showImageDialog = ref(false)
 
@@ -111,6 +116,141 @@ const closeImageDialog = () => {
   showImageDialog.value = false
 }
 
+// 🔗 分享功能
+const shareProject = async () => {
+  // 生成錨點連結到 WorkPage
+  const shareUrl = `${window.location.origin}${window.location.pathname}#/work#project-${props.project.id}`
+  // const shareData = {
+  //   title: `${props.project.title} - Judy的創作世界`,
+  //   text: `來看看 Judy 的作品：${props.project.description}`,
+  //   url: shareUrl,
+  // }
+
+  try {
+    showShareDialog(shareUrl)
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      console.error('分享失敗:', error)
+      showShareDialog(shareUrl)
+    }
+  }
+}
+
+// 顯示分享選項對話框
+const showShareDialog = (shareUrl) => {
+  const shareText = `來看看 Judy 的作品：${props.project.title}`
+
+  $q.dialog({
+    title: '分享作品',
+    message: '選擇分享方式',
+    options: {
+      type: 'radio',
+      model: 'copy',
+      items: [
+        { label: '複製連結', value: 'copy', icon: 'content_copy' },
+        { label: '分享到 Facebook', value: 'facebook', icon: 'facebook' },
+        { label: '分享到 LINE', value: 'line', icon: 'chat' },
+      ],
+    },
+    ok: '分享',
+    cancel: '取消',
+    persistent: true,
+  }).onOk((shareMethod) => {
+    handleShare(shareMethod, shareUrl, shareText)
+  })
+}
+
+// 🔧 現代化的複製到剪貼簿函數
+const copyToClipboard = async (text) => {
+  try {
+    // 方法 1: 使用現代 Clipboard API（推薦）
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+
+    // 方法 2: 使用 document.execCommand（較舊的瀏覽器支援）
+
+    // 方法 3: 最後備用方案
+    throw new Error('複製功能不受支援')
+  } catch (error) {
+    console.error('複製失敗:', error)
+    return false
+  }
+}
+
+// 處理不同的分享方式
+const handleShare = async (method, url) => {
+  switch (method) {
+    case 'copy': {
+      const copySuccess = await copyToClipboard(url)
+
+      if (copySuccess) {
+        $q.notify({
+          type: 'positive',
+          message: '連結已複製到剪貼簿！',
+          position: 'top',
+          timeout: 2000,
+          icon: 'content_copy',
+        })
+      } else {
+        // 如果複製失敗，顯示連結讓用戶手動複製
+        $q.dialog({
+          title: '手動複製連結',
+          message: '請手動複製以下連結：',
+          prompt: {
+            model: url,
+            type: 'text',
+            readonly: true,
+          },
+          ok: '關閉',
+          persistent: true,
+        })
+      }
+      break
+    }
+
+    case 'facebook':
+      window.open(
+        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+        '_blank',
+        'width=600,height=400,scrollbars=yes,resizable=yes',
+      )
+      $q.notify({
+        type: 'info',
+        message: '正在開啟 Facebook 分享...',
+        position: 'top',
+        timeout: 2000,
+        icon: 'facebook',
+      })
+      break
+
+    case 'line':
+      window.open(
+        `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`,
+        '_blank',
+        'width=600,height=400,scrollbars=yes,resizable=yes',
+      )
+      $q.notify({
+        type: 'info',
+        message: '正在開啟 LINE 分享...',
+        position: 'top',
+        timeout: 2000,
+        icon: 'chat',
+      })
+      break
+
+    default:
+      $q.notify({
+        type: 'negative',
+        message: '未知的分享方式',
+        position: 'top',
+        timeout: 2000,
+      })
+  }
+}
+
+// 滑鼠進入事件
 const handleMouseEnter = (event) => {
   const item = event.currentTarget
   // const image = item.querySelector('.main-image')
