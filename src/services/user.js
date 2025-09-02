@@ -28,4 +28,10 @@ export default {
   getFavorites() {
     return apiService.apiAuth.get('/user/favorites')
   },
+  goods(data) {
+    return apiService.apiAuth.patch('/user/goods', data)
+  },
+  getGoods() {
+    return apiService.apiAuth.get('/user/goods')
+  },
 }

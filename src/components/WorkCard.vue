@@ -35,12 +35,20 @@
                   flat
                   round
                   color="red"
-                  :icon="isFavorite ? 'favorite' : 'favorite_border'"
+                  :icon="isGood ? 'favorite' : 'favorite_border'"
+                  @click="toggleGood"
+                >
+                  <q-tooltip>喜歡按讚</q-tooltip>
+                </q-btn>
+                <q-btn
+                  flat
+                  round
+                  color="teal"
+                  :icon="isFavorite ? 'bookmark' : 'bookmark_border'"
                   @click="toggleFavorite"
                 >
-                  <q-tooltip>加入收藏</q-tooltip></q-btn
-                >
-                <q-btn flat round color="teal" icon="bookmark"><q-tooltip>書籤</q-tooltip></q-btn>
+                  <q-tooltip>加入書籤</q-tooltip>
+                </q-btn>
                 <q-btn flat round color="primary" icon="share" @click="shareProject">
                   <q-tooltip>分享作品</q-tooltip>
                 </q-btn>
@@ -340,6 +348,56 @@ const toggleFavorite = async () => {
     $q.notify({
       type: 'negative',
       message: isFavorite.value ? '無法移除收藏' : '無法加入收藏',
+      position: 'top',
+      timeout: 2000,
+    })
+  }
+}
+
+// 喜歡按讚
+// 🔗 判斷是否已按讚
+const isGood = computed(() => {
+  if (!userStore.isLoggedIn || !userStore.goods) {
+    return false
+  }
+  return userStore.goods.includes(props.project.id)
+})
+
+const toggleGood = async () => {
+  if (!userStore.isLoggedIn) {
+    $q.dialog({
+      title: '需要登入',
+      message: '請先登入帳號才能加入按讚',
+    })
+    return
+  }
+
+  try {
+    // 根據當前狀態決定是新增還是移除按讚
+    if (isGood.value) {
+      // 移除按讚
+      await userService.goods({
+        work: props.project.id,
+        action: 'remove',
+      })
+
+      // 更新 store 中的使用者資料
+      userStore.goods = userStore.goods.filter((id) => id !== props.project.id)
+    } else {
+      // 新增按讚
+      await userService.goods({
+        work: props.project.id,
+        action: 'add',
+      })
+
+      // 更新 store 中的使用者資料
+      userStore.goods.push(props.project.id)
+    }
+  } catch (error) {
+    console.error('按讚操作失敗:', error)
+    $q.notify({
+      type: 'negative',
+      message: isGood.value ? '無法移除按讚' : '無法加入按讚',
       position: 'top',
       timeout: 2000,
     })

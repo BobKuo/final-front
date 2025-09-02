@@ -9,6 +9,7 @@ export const useUserStore = defineStore(
     const role = ref('user')
     const token = ref('')
     const favorites = ref([])
+    const goods = ref([])
 
     const isLoggedIn = computed(() => token.value.length > 0)
     const isAdmin = computed(() => role.value === 'admin')
@@ -18,6 +19,7 @@ export const useUserStore = defineStore(
       cartTotal.value = data.cartTotal
       role.value = data.role
       favorites.value = data.favorites || []
+      goods.value = data.goods || []
 
       // 重新整理頁面時，用 token 取得使用者資料
       // 這個回應不包含 token
@@ -32,6 +34,7 @@ export const useUserStore = defineStore(
       role.value = 'user'
       token.value = ''
       favorites.value = []
+      goods.value = []
     }
 
     return {
@@ -43,7 +46,8 @@ export const useUserStore = defineStore(
       isAdmin,
       setUser,
       clearUser,
-      favorites
+      favorites,
+      goods,
     }
   },
   {
