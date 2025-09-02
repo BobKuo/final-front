@@ -10,7 +10,7 @@
       </div>
 
       <!-- 顯示當前選中系列的作品 -->
-      <div v-if="currentSeries" class="row justify-center">
+      <div class="row justify-center">
         <div class="col-12">
           <h2 class="section-title">我的收藏</h2>
         </div>
@@ -60,7 +60,7 @@ const transformWorkToProject = (work) => {
   return {
     id: work._id,
     title: work.name,
-    category: currentSeries.value?.name || '未分類', // 使用系列名稱作為分類
+    category: work.category || '未分類', // 使用系列名稱作為分類
     description: work.content || '暫無描述',
     image: work.images?.[0] || 'https://via.placeholder.com/600x400?text=No+Image', // 使用第一張圖片
     tags: work.tags || [],
