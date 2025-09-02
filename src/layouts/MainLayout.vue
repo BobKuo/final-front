@@ -110,8 +110,8 @@
         </div>
 
         <q-toolbar-title class="text-subtitle2 text-center">
-          <div>© 2025 Judy. All rights reserved</div>
-          <div>Site by BobKuo</div>
+          <div>© 2025 Judy Wang Art. All rights reserved.</div>
+          <div>Website by BobKuo</div>
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>

@@ -402,7 +402,7 @@ onMounted(async () => {
 <style scoped lang="scss">
 .projects-section {
   // padding: 120px 0;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  // background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   min-height: 100vh;
 }
 

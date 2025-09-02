@@ -117,11 +117,12 @@ const $q = useQuasar()
 // ************************
 
 const columns = [
-  {
-    name: '_id',
-    label: 'ID',
-    field: '_id',
-  },
+  // {
+  //   name: '_id',
+  //   label: 'ID',
+  //   field: '_id',
+  // },
+  { name: 'action', label: '操作', field: 'action' },
   { name: 'images', label: '圖片', field: 'images', align: 'center', sortable: false },
   { name: 'name', label: '名稱', field: 'name', sortable: true },
   { name: 'category', label: '分類', field: 'category' },
@@ -150,7 +151,6 @@ const columns = [
     field: (item) => new Date(item.updatedAt).toLocaleString(),
     sortable: true,
   },
-  { name: 'action', label: '操作', field: 'action' },
 ]
 
 const getProducts = async () => {
