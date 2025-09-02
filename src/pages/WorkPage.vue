@@ -36,9 +36,9 @@
           <q-btn-toggle
             v-model="slide"
             :options="carouselOptions"
-            toggle-color="primary"
+            toggle-color="judy-2"
             color="white"
-            text-color="primary"
+            text-color="judy-2"
             unelevated
           />
         </div>

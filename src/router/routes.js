@@ -5,28 +5,33 @@ const routes = [
     meta: { title: '首頁', login: '', admin: false },
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'daily', component: () => import('pages/DailyPage.vue') },
+      // { path: 'daily', component: () => import('pages/DailyPage.vue') },
       { path: 'work', component: () => import('pages/WorkPage.vue') },
+      {
+        path: 'shopping',
+        component: () => import('pages/ShoppingPage.vue'),
+        meta: { title: '購物' },
+      },
       // { path: 'paper', component: () => import('pages/PaperPage.vue') },
+      // { path: 'clips', component: () => import('pages/ClipsPage.vue') },
+      { path: 'about', component: () => import('pages/AboutPage.vue') },
+      { path: 'aboutsample', component: () => import('src/pages/AboutPage_sample.vue') },
+      // { path: 'contact', component: () => import('pages/ContactPage.vue') },
       {
         path: 'orders',
         component: () => import('src/pages/OrdersPage.vue'),
         meta: { title: '訂單紀錄' },
       },
       {
-        path: 'shopping',
-        component: () => import('pages/ShoppingPage.vue'),
-        meta: { title: '購物' },
-      },
-      {
         path: 'cart',
         component: () => import('pages/CartPage.vue'),
         meta: { title: '購物車結帳' },
       },
-      // { path: 'clips', component: () => import('pages/ClipsPage.vue') },
-      { path: 'about', component: () => import('pages/AboutPage.vue') },
-      { path: 'aboutsample', component: () => import('src/pages/AboutPage_sample.vue') },
-      // { path: 'contact', component: () => import('pages/ContactPage.vue') },
+      {
+        path: 'favorites',
+        component: () => import('pages/FavoritesPage.vue'),
+        meta: { title: '我的收藏' },
+      },
       {
         path: 'product/:id',
         component: () => import('pages/product/ProductDetail.vue'),

@@ -31,7 +31,13 @@
             </div>
             <div class="col-4">
               <div class="row justify-end">
-                <q-btn flat round color="red" icon="favorite" @click="toggleFavorite">
+                <q-btn
+                  flat
+                  round
+                  color="red"
+                  :icon="isFavorite ? 'favorite' : 'favorite_border'"
+                  @click="toggleFavorite"
+                >
                   <q-tooltip>加入收藏</q-tooltip></q-btn
                 >
                 <q-btn flat round color="teal" icon="bookmark"><q-tooltip>書籤</q-tooltip></q-btn>
@@ -75,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { gsap } from 'gsap'
 import { useQuasar } from 'quasar'
 import userService from 'src/services/user'
@@ -275,6 +281,14 @@ const handleMouseLeave = (event) => {
 }
 
 // 加入收藏
+// 🔗 判斷是否已收藏
+const isFavorite = computed(() => {
+  if (!userStore.isLoggedIn || !userStore.favorites) {
+    return false
+  }
+  return userStore.favorites.includes(props.project.id)
+})
+
 const toggleFavorite = async () => {
   if (!userStore.isLoggedIn) {
     $q.dialog({
@@ -285,19 +299,49 @@ const toggleFavorite = async () => {
   }
 
   try {
-    await userService.favorites({
-      work: props.project.id,
-    })
+    // 根據當前狀態決定是新增還是移除收藏
+    if (isFavorite.value) {
+      // 移除收藏
+      await userService.favorites({
+        work: props.project.id,
+        action: 'remove',
+      })
 
-    $q.notify({
-      type: 'positive',
-      message: '已加入收藏',
-    })
+      // 更新 store 中的使用者資料
+      userStore.favorites = userStore.favorites.filter((id) => id !== props.project.id)
+
+      $q.notify({
+        type: 'info',
+        message: '已移除收藏',
+        icon: 'favorite_border',
+        position: 'top',
+        timeout: 2000,
+      })
+    } else {
+      // 新增收藏
+      await userService.favorites({
+        work: props.project.id,
+        action: 'add',
+      })
+
+      // 更新 store 中的使用者資料
+      userStore.favorites.push(props.project.id)
+
+      $q.notify({
+        type: 'positive',
+        message: '已加入收藏',
+        icon: 'favorite',
+        position: 'top',
+        timeout: 2000,
+      })
+    }
   } catch (error) {
-    console.error('Error fetching products:', error)
+    console.error('收藏操作失敗:', error)
     $q.notify({
       type: 'negative',
-      message: '無法加入收藏，請稍後再試',
+      message: isFavorite.value ? '無法移除收藏' : '無法加入收藏',
+      position: 'top',
+      timeout: 2000,
     })
   }
 }

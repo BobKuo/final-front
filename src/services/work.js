@@ -10,6 +10,9 @@ export default {
   get() {
     return apiService.api.get('/work')
   },
+  getByIds(data) {
+    return apiService.apiAuth.post('/work/ids', data)
+  },
   getId(id) {
     return apiService.api.get('/work/' + id)
   },
